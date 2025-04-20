@@ -1,0 +1,2 @@
+Temps ecoule pour la boucle: 0.160738 secondes
+Temps ecoule pour lire le fichier: 0.149933 secondes
