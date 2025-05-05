@@ -127,6 +127,77 @@ string extraireTitre(const string& contenu) {
     return titre;
 }
 
+string extraireBiblio(const string& contenu) {
+    istringstream iss(contenu);
+    string ligne, biblio = "";
+    bool inBiblio = false;
+
+    regex debutBiblio(R"(\b(References|Bibliography|Références|Référence|Works Cited)\b)", regex_constants::icase);
+    regex separateurColonnes(" {7,}");
+    regex ligneVide(R"(^\s*$)");
+
+    vector<string> lignes;
+    while (getline(iss, ligne)) {
+        ligne.erase(remove(ligne.begin(), ligne.end(), '\r'), ligne.end());
+        lignes.push_back(ligne);
+    }
+
+    for (size_t i = 0; i < lignes.size(); ++i) {
+        string currentLine = lignes[i];
+        smatch match;
+        string selectedColumn = currentLine;
+
+        if (regex_search(currentLine, match, separateurColonnes)) {
+            string leftPart = match.prefix().str();
+            string rightPart = match.suffix().str();
+
+            leftPart.erase(0, leftPart.find_first_not_of(" \t\n"));
+            leftPart.erase(leftPart.find_last_not_of(" \t\n") + 1);
+            rightPart.erase(0, rightPart.find_first_not_of(" \t\n"));
+            rightPart.erase(rightPart.find_last_not_of(" \t\n") + 1);
+
+            // On garde une seule colonne pour éviter d'ajouter des morceaux parasites
+            if (inBiblio) {
+                // Pendant la biblio, on prend la colonne gauche uniquement
+                selectedColumn = leftPart;
+            } else {
+                // Avant la biblio, on cherche le mot-clé sur les deux
+                if (regex_search(rightPart, debutBiblio)) {
+                    selectedColumn = rightPart;
+                } else if (regex_search(leftPart, debutBiblio)) {
+                    selectedColumn = leftPart;
+                } else {
+                    continue; // Ligne inutile avant la biblio
+                }
+            }
+        } else {
+            // Ligne classique (pas en deux colonnes)
+            selectedColumn.erase(0, selectedColumn.find_first_not_of(" \t\n"));
+            selectedColumn.erase(selectedColumn.find_last_not_of(" \t\n") + 1);
+        }
+
+        // Détection du début de la biblio
+        if (!inBiblio && regex_search(selectedColumn, debutBiblio)) {
+            inBiblio = true;
+            continue;
+        }
+
+        if (inBiblio) {
+            if (regex_match(selectedColumn, ligneVide)) continue;
+            biblio += selectedColumn + "\n";
+        }
+    }
+
+    if (biblio.empty()) return "Bibliographie introuvable";
+
+    biblio.erase(0, biblio.find_first_not_of(" \t\n"));
+    biblio.erase(biblio.find_last_not_of(" \t\n") + 1);
+    return biblio;
+}
+
+
+
+
 // === Fonction principale ===
 int main(int argc, char* argv[]) {
     //  Gestion des arguments -t (texte) ou -x (xml)
@@ -169,6 +240,7 @@ int main(int argc, char* argv[]) {
             //  Extraction
             string titre = extraireTitre(contenu);
             string resume = extraireAbstract(contenu);
+            string biblio = extraireBiblio(contenu);
 
             //  Écriture dans fichier final
             string cheminSortie = dossierSortie + "/" + nomModifie;
@@ -187,7 +259,7 @@ int main(int argc, char* argv[]) {
                 fichierSortie << "  <titre>" << titre << "</titre>\n";
                 fichierSortie << "  <auteur>Auteur introuvable</auteur>\n";
                 fichierSortie << "  <abstract>" << resume << "</abstract>\n";
-                fichierSortie << "  <biblio>Bibliographie non extraite</biblio>\n";
+                fichierSortie << "  <biblio>"<<biblio<<"</biblio>\n";
                 fichierSortie << "</article>\n";
             }
 
