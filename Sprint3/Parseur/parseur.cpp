@@ -1,4 +1,3 @@
-g++ parseur.cpp -o parseur
 #include <iostream>
 #include <filesystem>
 #include <string>
