@@ -1,13 +1,16 @@
+g++ parseur.cpp -o parseur
 #include <iostream>
 #include <filesystem>
 #include <string>
 #include <fstream>
 #include <sstream>
 #include <regex>
-#include <algorithm> 
+#include <algorithm>
 
 using namespace std;
 namespace fs = std::filesystem;
+
+// === Fonction extraction Abstract ===
 string extraireAbstract(const string& contenu) {
     istringstream iss(contenu);
     string ligne, abstract = "";
@@ -19,56 +22,39 @@ string extraireAbstract(const string& contenu) {
     regex separateurColonnes(" {7,}");
 
     vector<string> lignes;
-
-    
     while (getline(iss, ligne)) {
         ligne.erase(remove(ligne.begin(), ligne.end(), '\r'), ligne.end());
         lignes.push_back(ligne);
     }
 
-    cout << "\n[DEBUG] Lignes chargées: " << lignes.size() << "\n";
-
     for (size_t i = 0; i < lignes.size(); ++i) {
         string currentLine = lignes[i];
-        
-
-        
         smatch match;
+
         if (regex_search(currentLine, match, separateurColonnes)) {
             string leftPart = match.prefix().str();
             string rightPart = match.suffix().str();
-
             leftPart.erase(0, leftPart.find_first_not_of(" \t\n"));
             leftPart.erase(leftPart.find_last_not_of(" \t\n") + 1);
-
             rightPart.erase(0, rightPart.find_first_not_of(" \t\n"));
             rightPart.erase(rightPart.find_last_not_of(" \t\n") + 1);
 
-            
-        if (regex_search(rightPart, contientAbstract) || regex_search(rightPart, finPossible) || regex_search(rightPart, finPossible2)) {
-            currentLine = rightPart;
-        } else {
-            currentLine = !leftPart.empty() ? leftPart : rightPart;
-        }
-            
+            if (regex_search(rightPart, contientAbstract) || regex_search(rightPart, finPossible) || regex_search(rightPart, finPossible2)) {
+                currentLine = rightPart;
+            } else {
+                currentLine = !leftPart.empty() ? leftPart : rightPart;
+            }
         }
 
-        
         currentLine.erase(0, currentLine.find_first_not_of(" \t\n"));
         currentLine.erase(currentLine.find_last_not_of(" \t\n") + 1);
 
-       
-
-        
         if (!inAbstract && regex_search(currentLine, contientAbstract)) {
-            cout << "[DEBUG] Mot-clé 'Abstract' détecté !" << endl;
             inAbstract = true;
             continue;
         }
 
-        
         if (inAbstract) {
-            
             bool startsFarRight = true;
             for (size_t j = 0; j < 30 && j < lignes[i].size(); ++j) {
                 if (lignes[i][j] != ' ') {
@@ -76,46 +62,24 @@ string extraireAbstract(const string& contenu) {
                     break;
                 }
             }
-                if (regex_search(currentLine, finPossible) || regex_search(currentLine, finPossible2)) {
-                    
-                    break;
-                }
-            if (startsFarRight) {
-                
-                continue;
-            }
 
-            
-            if (regex_search(currentLine, finPossible)) {
-               
-                break;
-            }
-            if (regex_search(currentLine, finPossible2)) {
-                
-                break;
-            }
+            if (regex_search(currentLine, finPossible) || regex_search(currentLine, finPossible2)) break;
+            if (startsFarRight) continue;
 
             if (!currentLine.empty()) {
                 abstract += currentLine + " ";
-                
-            } else {
-                
             }
         }
     }
 
-    
-    if (abstract.empty()) {
-        cout << "[DEBUG] Aucun abstract trouvé." << endl;
-        return "Abstract introuvable";
-    }
+    if (abstract.empty()) return "Abstract introuvable";
 
     abstract.erase(0, abstract.find_first_not_of(" \t\n"));
     abstract.erase(abstract.find_last_not_of(" \t\n") + 1);
-
-    cout << "\n[DEBUG] Résultat final de l'abstract:\n" << abstract << "\n";
     return abstract;
 }
+
+// === Fonction extraction Titre ===
 string extraireTitre(const string& contenu) {
     istringstream iss(contenu);
     string ligne;
@@ -130,21 +94,13 @@ string extraireTitre(const string& contenu) {
         string lower = ligne;
         transform(lower.begin(), lower.end(), lower.begin(), ::tolower);
 
-        if (lower.find("from:") != string::npos ||
-            lower.find("submitted") != string::npos ||
-            lower.find("published") != string::npos ||
-            lower.find("journal") != string::npos ||
-            lower.find("copyright") != string::npos ||
-            lower.find("www.") != string::npos ||
-            lower.find("http") != string::npos ||
-            lower.find(".org") != string::npos ||
-            lower.find(".com") != string::npos ||
-            lower.find("@") != string::npos ||
-            lower.find("author") != string::npos ||
-            lower.find("email") != string::npos ||
-            lower.find("proceedings") != string::npos) {
-            continue;
-        }
+        if (lower.find("from:") != string::npos || lower.find("submitted") != string::npos ||
+            lower.find("published") != string::npos || lower.find("journal") != string::npos ||
+            lower.find("copyright") != string::npos || lower.find("www.") != string::npos ||
+            lower.find("http") != string::npos || lower.find(".org") != string::npos ||
+            lower.find(".com") != string::npos || lower.find("@") != string::npos ||
+            lower.find("author") != string::npos || lower.find("email") != string::npos ||
+            lower.find("proceedings") != string::npos) continue;
 
         lignesTitre.push_back(ligne);
         if (lignesTitre.size() >= 2) break;
@@ -153,8 +109,7 @@ string extraireTitre(const string& contenu) {
     string titre = "";
     for (size_t i = 0; i < lignesTitre.size(); ++i) {
         titre += lignesTitre[i];
-        if (i != lignesTitre.size() - 1)
-            titre += " ";
+        if (i != lignesTitre.size() - 1) titre += " ";
     }
 
     if (titre.empty()) return "Titre introuvable";
@@ -170,32 +125,41 @@ string extraireTitre(const string& contenu) {
 
     titre.erase(0, titre.find_first_not_of(" \t\n"));
     titre.erase(titre.find_last_not_of(" \t\n") + 1);
-
     return titre;
 }
 
+// === Fonction principale ===
+int main(int argc, char* argv[]) {
+    //  Gestion des arguments -t (texte) ou -x (xml)
+    if (argc != 2 || (string(argv[1]) != "-t" && string(argv[1]) != "-x")) {
+        cerr << " Utilisation incorrecte.\n";
+        cerr << "Usage : ./parseur -t   (sortie texte)\n";
+        cerr << "        ./parseur -x   (sortie XML)\n";
+        return 1;
+    }
 
-int main() {
+    bool modeTexte = (string(argv[1]) == "-t");
     string dossierEntree = "converted_txt";
-    string dossierSortie = "parsed_txt";
+    string dossierSortie = modeTexte ? "parsed_txt" : "parsed_xml";
 
-    // Nettoyage et création dossier sortie (Collègue 1)
+    //  Nettoyage et création du dossier de sortie
     if (fs::exists(dossierSortie)) {
         fs::remove_all(dossierSortie);
     }
     fs::create_directory(dossierSortie);
 
-    cout << "Fichiers traités du dossier '" << dossierEntree << "':" << endl;
+    cout << "\n Traitement des fichiers depuis '" << dossierEntree << "' vers '" << dossierSortie << "'\n";
 
-    // Parcourir les fichiers .txt (Collègue 2)
+    //  Parcourir les fichiers .txt
     for (const auto& fichier : fs::directory_iterator(dossierEntree)) {
         if (fichier.path().extension() == ".txt") {
             string nomOriginal = fichier.path().filename().string();
+            string nomModifie = nomOriginal;
+            replace(nomModifie.begin(), nomModifie.end(), ' ', '_');
 
-            
             ifstream fichierEntree(fichier.path());
             if (!fichierEntree) {
-                cerr << "Erreur ouverture fichier: " << nomOriginal << endl;
+                cerr << "Erreur ouverture fichier : " << nomOriginal << endl;
                 continue;
             }
 
@@ -203,14 +167,11 @@ int main() {
             buffer << fichierEntree.rdbuf();
             string contenu = buffer.str();
 
-            // Extraction des données (Collègue 3)
+            //  Extraction
             string titre = extraireTitre(contenu);
             string resume = extraireAbstract(contenu);
 
-            //  Écriture dans fichier structuré (Collègue 4)
-            string nomModifie = nomOriginal;
-            replace(nomModifie.begin(), nomModifie.end(), ' ', '_');  
-
+            //  Écriture dans fichier final
             string cheminSortie = dossierSortie + "/" + nomModifie;
             ofstream fichierSortie(cheminSortie);
             if (!fichierSortie) {
@@ -218,17 +179,20 @@ int main() {
                 continue;
             }
 
-            fichierSortie << "Titre : " << titre << "\n\n";
-            fichierSortie << "Abstract : " << resume << "\n";
-            fichierSortie.close();
+            if (modeTexte) {
+                fichierSortie << "Titre : " << titre << "\n\n";
+                fichierSortie << "Abstract : " << resume << "\n";
+            } else {
+                fichierSortie << "<article>\n";
+                fichierSortie << "  <preamble>" << nomModifie << "</preamble>\n";
+                fichierSortie << "  <titre>" << titre << "</titre>\n";
+                fichierSortie << "  <auteur>Auteur introuvable</auteur>\n";
+                fichierSortie << "  <abstract>" << resume << "</abstract>\n";
+                fichierSortie << "  <biblio>Bibliographie non extraite</biblio>\n";
+                fichierSortie << "</article>\n";
+            }
 
-            
-            cout << "\n==============================================\n";
-            cout << "Fichier traité : " << nomOriginal << "\n\n";
-            cout << "Titre extrait : " << titre << "\n\n";
-            cout << "Abstract extrait : " << resume << endl;
-            cout << "Résultat sauvegardé dans : " << cheminSortie << endl;
-            cout << "==============================================\n";
+            cout << " Fichier traité : " << nomOriginal << " ➜ " << cheminSortie << endl;
         }
     }
 
