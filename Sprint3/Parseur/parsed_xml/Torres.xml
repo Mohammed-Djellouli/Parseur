@@ -1,9 +1,9 @@
-Titre : Summary Evaluation with and without References
-
-Abstract : the evaluation of text summarization systems without human models which is used to produce system rankings. The research is carried out using a new content-based evaluation framework called F RESA to compute a variety of divergences among probability distributions. We apply our comparison framework to various well-established content-based evaluation measures in text summarization such as C OVERAGE, R ESPONSIVENESS, P YRAMIDS and ROUGE studying their associations in various text summarization tasks including generic multi-document summarization in English and French, focus-based multi-document summarization in English and generic single-document summarization in French and Spanish. Index Terms—Text summarization evaluation, content-based evaluation measures, divergences.
-Preamble : Torres.txt
-Aueturs :    Juan-Manuel Torres-Moreno, Horacio Saggion, Iria da Cunha, Eric SanJuan, and Patricia Velázquez-Morales
-Biblio : Juan-Manuel Torres-Moreno, Horacio Saggion, Iria da Cunha, Eric SanJuan, and Patricia Velázquez-Morales
+<article>
+  <preamble>Torres.txt</preamble>
+  <titre>Summary Evaluation with and without References</titre>
+  <auteur>   Juan-Manuel Torres-Moreno, Horacio Saggion, Iria da Cunha, Eric SanJuan, and Patricia Velázquez-Morales</auteur>
+  <abstract>the evaluation of text summarization systems without human models which is used to produce system rankings. The research is carried out using a new content-based evaluation framework called F RESA to compute a variety of divergences among probability distributions. We apply our comparison framework to various well-established content-based evaluation measures in text summarization such as C OVERAGE, R ESPONSIVENESS, P YRAMIDS and ROUGE studying their associations in various text summarization tasks including generic multi-document summarization in English and French, focus-based multi-document summarization in English and generic single-document summarization in French and Spanish. Index Terms—Text summarization evaluation, content-based evaluation measures, divergences.</abstract>
+  <biblio>Juan-Manuel Torres-Moreno, Horacio Saggion, Iria da Cunha, Eric SanJuan, and Patricia Velázquez-Morales
 Abstract—We study a new content-based method for
 the evaluation of text summarization systems without
 human models which is used to produce system rankings.
@@ -326,4 +326,5 @@ Morristown, USA, 2006, pp. 463–470.
 [16] S. Kullback and R. Leibler, “On information and sufficiency,” Ann. of
 Math. Stat., vol. 22, no. 1, pp. 79–86, 1951.
 [17] S. Siegel and N. Castellan, Nonparametric Statistics for the Behavioral
-Sciences. McGraw-Hill, 1998.
+Sciences. McGraw-Hill, 1998.</biblio>
+</article>

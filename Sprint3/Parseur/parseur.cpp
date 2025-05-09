@@ -5,6 +5,8 @@
 #include <sstream>
 #include <regex>
 #include <algorithm>
+#include <set>
+#include <iterator>
 
 using namespace std;
 namespace fs = std::filesystem;
@@ -195,6 +197,93 @@ string extraireBiblio(const string& contenu) {
     return biblio;
 }
 
+vector<string> extraireAuteurs(const string& contenu) {
+    istringstream iss(contenu);
+    string ligne;
+    vector<string> lignes;
+    regex emailPattern(R"(([\w\.-]+,?[\w\.-]*)\s*@[\w\.-]+\.\w+)");
+    regex ignorerPattern(R"(University|Universiteit|Way|Technologies|Laboratory|Space|Institut|Department|School|Laboratoire|Centre|College|Inc|Place|Parkway|France|Canada|Belgium|JAPAN|USA|UK|arXiv|SRI|Google|Submitted|published|École|Polytechnique)", regex_constants::icase);
+    regex ligneVide(R"(^\s*$)");
+    regex ligneNom(R"(([A-Z][a-z]+([ -][A-Z][a-z]+)+))");
+    regex separateurColonnes(" {7,}");
+
+    while (getline(iss, ligne)) {
+        ligne.erase(remove(ligne.begin(), ligne.end(), '\r'), ligne.end());
+        lignes.push_back(ligne);
+    }
+
+    set<string> auteursTrouves;
+
+    // 1. Recherche autour des emails
+    for (size_t i = 0; i < lignes.size(); ++i) {
+    smatch emailMatch;
+    if (regex_search(lignes[i], emailMatch, emailPattern)) {
+        // Ligne contenant un email : extraire la partie gauche (avant l'email)
+        string ligneAvecEmail = lignes[i];
+        size_t posEmail = ligneAvecEmail.find(emailMatch[0].str());
+        string partieGauche = ligneAvecEmail.substr(0, posEmail);
+
+        // Nettoyage
+        partieGauche.erase(0, partieGauche.find_first_not_of(" \t"));
+        partieGauche.erase(partieGauche.find_last_not_of(" \t") + 1);
+        partieGauche = regex_replace(partieGauche, regex(R"([0-9]+)"), "");
+        partieGauche = regex_replace(partieGauche, regex(R"([,;])"), "");
+
+        // Vérifie si la partie gauche ressemble à un nom
+        if (!partieGauche.empty() && !regex_search(partieGauche, ignorerPattern) && regex_search(partieGauche, ligneNom)) {
+            auteursTrouves.insert(partieGauche);
+        }
+    }
+}
+
+
+    // 2. Fallback haut du fichier (colonnes)
+    if (auteursTrouves.empty()) {
+        for (size_t i = 0; i < min((size_t)15, lignes.size()); ++i) {
+            string ligneCourante = lignes[i];
+            if (regex_match(ligneCourante, ligneVide)) continue;
+
+            if (regex_search(ligneCourante, regex(R"(Integer|compression|Global|approach|inference|sentence|summary|document|scoring|method|evaluation|update|reduction|system|learning|representation|model)", regex_constants::icase))) {
+                continue;
+            }
+
+            if (regex_search(ligneCourante, ligneNom) && !regex_search(ligneCourante, ignorerPattern)) {
+                auteursTrouves.insert(ligneCourante);
+                continue;
+            }
+
+            smatch match;
+            if (regex_search(ligneCourante, match, separateurColonnes)) {
+                string left = match.prefix().str();
+                string right = match.suffix().str();
+
+                for (string part : {left, right}) {
+                    part.erase(0, part.find_first_not_of(" \t"));
+                    part.erase(part.find_last_not_of(" \t") + 1);
+                    part = regex_replace(part, regex(R"([\\,\[\]]+)"), "");
+
+                    stringstream ss(part);
+                    string nom;
+                    while (getline(ss, nom, ',')) {
+                        nom.erase(0, nom.find_first_not_of(" \t"));
+                        nom.erase(nom.find_last_not_of(" \t") + 1);
+
+                        int majCount = count_if(nom.begin(), nom.end(), ::isupper);
+                        if (majCount >= 2 && !regex_search(nom, ignorerPattern) && regex_search(nom, ligneNom)) {
+                            auteursTrouves.insert(nom);
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    return vector<string>(auteursTrouves.begin(), auteursTrouves.end());
+}
+
+
+
+
 
 
 
@@ -241,9 +330,13 @@ int main(int argc, char* argv[]) {
             string titre = extraireTitre(contenu);
             string resume = extraireAbstract(contenu);
             string biblio = extraireBiblio(contenu);
+            vector<string> auteurs = extraireAuteurs(contenu);
+
 
             //  Écriture dans fichier final
-            string cheminSortie = dossierSortie + "/" + nomModifie;
+            string extension = modeTexte ? ".txt" : ".xml";
+            string cheminSortie = dossierSortie + "/" + fs::path(nomModifie).stem().string() + extension;
+
             ofstream fichierSortie(cheminSortie);
             if (!fichierSortie) {
                 cerr << "Erreur création fichier sortie : " << cheminSortie << endl;
@@ -253,11 +346,18 @@ int main(int argc, char* argv[]) {
             if (modeTexte) {
                 fichierSortie << "Titre : " << titre << "\n\n";
                 fichierSortie << "Abstract : " << resume << "\n";
+                fichierSortie <<"Preamble : "<<nomModifie<< "\n";
+                for (const string& a : auteurs) {
+                    fichierSortie << "Aueturs : " << a << "\n";
+                }
+                fichierSortie << "Biblio : "<<biblio<< "\n";
             } else {
                 fichierSortie << "<article>\n";
                 fichierSortie << "  <preamble>" << nomModifie << "</preamble>\n";
                 fichierSortie << "  <titre>" << titre << "</titre>\n";
-                fichierSortie << "  <auteur>Auteur introuvable</auteur>\n";
+                for (const string& a : auteurs) {
+                    fichierSortie << "  <auteur>" << a << "</auteur>\n";
+                }
                 fichierSortie << "  <abstract>" << resume << "</abstract>\n";
                 fichierSortie << "  <biblio>"<<biblio<<"</biblio>\n";
                 fichierSortie << "</article>\n";

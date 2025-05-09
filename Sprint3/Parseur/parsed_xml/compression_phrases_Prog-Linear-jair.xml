@@ -1,10 +1,10 @@
-Titre : Global Inference for Sentence Compression An Integer Linear Programming Approach
-
-Abstract : Sentence compression holds promise for many applications ranging from summarization to subtitle generation. Our work views sentence compression as an optimization problem and uses integer linear programming (ILP) to infer globally optimal compressions in the presence of linguistically motivated constraints. We show how previous formulations of sentence compression can be recast as ILPs and extend these models with novel global constraints. Experimental results on written and spoken texts demonstrate improvements over state-of-the-art models.
-Preamble : compression_phrases_Prog-Linear-jair.txt
-Aueturs : James Clarke
-Aueturs : Mirella Lapata
-Biblio : Aho, A. V., & Ullman, J. D. (1969). Syntax directed translations and the pushdown assem-
+<article>
+  <preamble>compression_phrases_Prog-Linear-jair.txt</preamble>
+  <titre>Global Inference for Sentence Compression An Integer Linear Programming Approach</titre>
+  <auteur>James Clarke</auteur>
+  <auteur>Mirella Lapata</auteur>
+  <abstract>Sentence compression holds promise for many applications ranging from summarization to subtitle generation. Our work views sentence compression as an optimization problem and uses integer linear programming (ILP) to infer globally optimal compressions in the presence of linguistically motivated constraints. We show how previous formulations of sentence compression can be recast as ILPs and extend these models with novel global constraints. Experimental results on written and spoken texts demonstrate improvements over state-of-the-art models.</abstract>
+  <biblio>Aho, A. V., & Ullman, J. D. (1969). Syntax directed translations and the pushdown assem-
 bler. Journal of Computer and System Sciences, 3, 37–56.
 Bangalore, S., Rambow, O., & Whittaker, S. (2000). Evaluation metrics for generation.
 In Proceedings of the first International Conference on Natural Language Generation,
@@ -130,4 +130,5 @@ Winston, W. L., & Venkataramanan, M. (2003). Introduction to Mathematical Progra
 ming: Applications and Algorithms (4th edition). Duxbury.
 Zajic, D., Door, B. J., Lin, J., & Schwartz, R. (2007). Multi-candidate reduction: Sentence
 compression as a tool for document summarization tasks. Information Processing
-Management Special Issue on Summarization, 43 (6), 1549–1570.
+Management Special Issue on Summarization, 43 (6), 1549–1570.</biblio>
+</article>

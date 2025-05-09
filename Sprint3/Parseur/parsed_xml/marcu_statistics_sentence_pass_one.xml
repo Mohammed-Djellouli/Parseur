@@ -1,9 +1,9 @@
-Titre : Statistics-Based Summarization
-
-Abstract : When humans produce summaries of documents, they do not simply extract sentences and concatenate them. Rather, they create new sentences that are grammati- cal, that cohere with one another, and that capture the eventually use Abstract, Text tuples, which are widely ument. Given that large collections of text/abstract pairs are available online, it is now possible to envision algorithms that are trained to mimic this process. In this paper, we focus on sentence compression, a sim- pler version of this larger challenge. We aim to achieve two goals simultaneously: our compressions should be grammatical, and they should retain the most impor- tant pieces of information. These two goals can con- ﬂict. We devise both noisy-channel and decision-tree approaches to the problem, and we evaluate results against manual compressions and a simple baseline.
-Preamble : marcu_statistics_sentence_pass_one.txt
-Aueturs :                                            Kevin Knight and Daniel Marcu
-Biblio : diﬀerences between the two algorithms. As Table 1
+<article>
+  <preamble>marcu_statistics_sentence_pass_one.txt</preamble>
+  <titre>Statistics-Based Summarization</titre>
+  <auteur>                                           Kevin Knight and Daniel Marcu</auteur>
+  <abstract>When humans produce summaries of documents, they do not simply extract sentences and concatenate them. Rather, they create new sentences that are grammati- cal, that cohere with one another, and that capture the eventually use Abstract, Text tuples, which are widely ument. Given that large collections of text/abstract pairs are available online, it is now possible to envision algorithms that are trained to mimic this process. In this paper, we focus on sentence compression, a sim- pler version of this larger challenge. We aim to achieve two goals simultaneously: our compressions should be grammatical, and they should retain the most impor- tant pieces of information. These two goals can con- ﬂict. We devise both noisy-channel and decision-tree approaches to the problem, and we evaluate results against manual compressions and a simple baseline.</abstract>
+  <biblio>diﬀerences between the two algorithms. As Table 1
 shows, the performance of the compression algorithms
 is much closer to human performance than baseline per-
 formance; yet, humans perform statistically better than
@@ -74,4 +74,5 @@ summarization: A statistical approach to generating
 highly condensed non-extractive summaries. In Pro-
 ceedings of the 22nd International Conference on Re-
 search and Development in Information Retrieval (SI-
-GIR’99), Poster Session, 315–316.
+GIR’99), Poster Session, 315–316.</biblio>
+</article>

@@ -1,10 +1,10 @@
-Titre : Efficient Estimation of Word Representations in Vector Space
-
-Abstract : Abstract introuvable
-Preamble : Word2Vec.txt
-Aueturs :                                                           Greg Corrado                                     Jeffrey Dean
-Aueturs :                                                           Tomas Mikolov                                     Kai Chen
-Biblio : [1] Y. Bengio, R. Ducharme, P. Vincent. A neural probabilistic language model. Journal of Ma-
+<article>
+  <preamble>Word2Vec.txt</preamble>
+  <titre>Efficient Estimation of Word Representations in Vector Space</titre>
+  <auteur>                                                          Greg Corrado                                     Jeffrey Dean</auteur>
+  <auteur>                                                          Tomas Mikolov                                     Kai Chen</auteur>
+  <abstract>Abstract introuvable</abstract>
+  <biblio>[1] Y. Bengio, R. Ducharme, P. Vincent. A neural probabilistic language model. Journal of Ma-
 chine Learning Research, 3:1137-1155, 2003.
 [2] Y. Bengio, Y. LeCun. Scaling learning algorithms towards AI. In: Large-Scale Kernel Ma-
 chines, MIT Press, 2007.
@@ -74,4 +74,5 @@ tional Joint Conference on Artificial Intelligence, 2005.
 [31] A. Zhila, W.T. Yih, C. Meek, G. Zweig, T. Mikolov. Combining Heterogeneous Models for
 Measuring Relational Similarity. NAACL HLT 2013.
 [32] G. Zweig, C.J.C. Burges. The Microsoft Research Sentence Completion Challenge, Microsoft
-Research Technical Report MSR-TR-2011-129, 2011.
+Research Technical Report MSR-TR-2011-129, 2011.</biblio>
+</article>

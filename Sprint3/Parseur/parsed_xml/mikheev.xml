@@ -1,10 +1,10 @@
-Titre : Periods, Capitalized Words, etc
-
-Abstract : Abstract introuvable
-Preamble : mikheev.txt
-Aueturs : Andrei Mikheev∗
-Aueturs : Periods, Capitalized Words, etc.
-Biblio : Aberdeen, John S., John D. Burger, David S.
+<article>
+  <preamble>mikheev.txt</preamble>
+  <titre>Periods, Capitalized Words, etc</titre>
+  <auteur>Andrei Mikheev∗</auteur>
+  <auteur>Periods, Capitalized Words, etc.</auteur>
+  <abstract>Abstract introuvable</abstract>
+  <biblio>Aberdeen, John S., John D. Burger, David S.
 Day, Lynette Hirschman, Patricia
 Robinson, and Marc Vilain. 1995. “Mitre:
 Description of the alembic system used
@@ -95,4 +95,5 @@ Applied Natural Language Processing
 Kaufmann.
 Riley, Michael D. 1989. “Some applications
 of tree-based modeling to speech and
-318
+318</biblio>
+</article>

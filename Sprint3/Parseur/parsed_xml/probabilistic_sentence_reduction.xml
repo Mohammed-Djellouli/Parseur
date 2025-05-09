@@ -1,9 +1,9 @@
-Titre : Probabilistic Sentence Reduction Using Support Vector Machines
-
-Abstract : This paper investigates a novel application of sup- port vector machines (SVMs) for sentence reduction. We also propose a new probabilistic sentence reduc- tion method based on support vector machine learn- ing. Experimental results show that the proposed methods outperform earlier methods in term of sen- tence reduction performance.
-Preamble : probabilistic_sentence_reduction.txt
-Aueturs :                  Minh Le Nguyen, Akira Shimazu, Susumu Horiguchi
-Biblio : is called a relevant candidate.
+<article>
+  <preamble>probabilistic_sentence_reduction.txt</preamble>
+  <titre>Probabilistic Sentence Reduction Using Support Vector Machines</titre>
+  <auteur>                 Minh Le Nguyen, Akira Shimazu, Susumu Horiguchi</auteur>
+  <abstract>This paper investigates a novel application of sup- port vector machines (SVMs) for sentence reduction. We also propose a new probabilistic sentence reduc- tion method based on support vector machine learn- ing. Experimental results show that the proposed methods outperform earlier methods in term of sen- tence reduction performance.</abstract>
+  <biblio>is called a relevant candidate.
 For a given sentence, we used a simple
 method, namely SVMP-R to obtain a re-
 duced sentence by selecting a relevant candi-
@@ -52,4 +52,5 @@ returned by the reduction process might yield
 accuracies higher than previous work. We be-
 lieve that a good ranking method might improve
 the sentence reduction performance further in a
-text.
+text.</biblio>
+</article>

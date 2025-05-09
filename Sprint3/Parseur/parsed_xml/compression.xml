@@ -1,9 +1,9 @@
-Titre : Multi-Candidate Reduction: Sentence Compression as a Tool for Document Summarization Tasks∗
-
-Abstract : This article examines the application of two single-document sentence compression techniques to the problem of multi-document summarization—a “parse-and-trim” approach and a statisti- cal noisy-channel approach. We introduce the Multi-Candidate Reduction (MCR) framework for multi-document summarization, in which many compressed candidates are generated for each source sentence. These candidates are then selected for inclusion in the final summary based on a com- bination of static and dynamic features. Evaluations demonstrate that sentence compression is a valuable component of a larger multi-document summarization framework. Keywords: headline generation, summarization, parse-and-trim, Hidden Markov Model PACS: Artificial intelligence, 07.05.Mh; Computer science and technology, 89.20.Ff; Spoken lan- guages, processing of, 43.71.Sy
-Preamble : compression.txt
-Aueturs :                      David Zajic1 , Bonnie J. Dorr1 , Jimmy Lin1 , Richard Schwartz2
-Biblio : L. Bahl, F. Jelinek, and R. Mercer. 1983. A maximum likelihood approach to continuous speech
+<article>
+  <preamble>compression.txt</preamble>
+  <titre>Multi-Candidate Reduction: Sentence Compression as a Tool for Document Summarization Tasks∗</titre>
+  <auteur>                     David Zajic1 , Bonnie J. Dorr1 , Jimmy Lin1 , Richard Schwartz2</auteur>
+  <abstract>This article examines the application of two single-document sentence compression techniques to the problem of multi-document summarization—a “parse-and-trim” approach and a statisti- cal noisy-channel approach. We introduce the Multi-Candidate Reduction (MCR) framework for multi-document summarization, in which many compressed candidates are generated for each source sentence. These candidates are then selected for inclusion in the final summary based on a com- bination of static and dynamic features. Evaluations demonstrate that sentence compression is a valuable component of a larger multi-document summarization framework. Keywords: headline generation, summarization, parse-and-trim, Hidden Markov Model PACS: Artificial intelligence, 07.05.Mh; Computer science and technology, 89.20.Ff; Spoken lan- guages, processing of, 43.71.Sy</abstract>
+  <biblio>L. Bahl, F. Jelinek, and R. Mercer. 1983. A maximum likelihood approach to continuous speech
 recognition. IEEE Transactions on Pattern Analysis and Machine Intelligence, 5(2):179–190.
 M. Banko, V. Mittal, and M. Witbrock. 2000. Headline generation based on statistical translation.
 In Proceedings of the 38th Annual Meeting of the Association for Computational Linguistics (ACL
@@ -132,4 +132,5 @@ D. Zajic. 2007. Multiple Alternative Sentence Compressions (MASC) as a Tool for 
 marization Tasks. Ph.D. thesis, University of Maryland, College Park.
 L. Zhou and E. Hovy. 2003. Headline summarization at ISI. In Proceedings of the HLT-NAACL
 2003 Text Summarization Workshop and Document Understanding Conference (DUC 2003), pages
-174–178, Edmonton, Alberta.
+174–178, Edmonton, Alberta.</biblio>
+</article>

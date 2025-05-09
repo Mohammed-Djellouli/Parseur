@@ -1,9 +1,9 @@
-Titre : AUTOMATIC LINGUISTIC SEGMENTATION OF CONVERSATIONAL SPEECH
-
-Abstract : As speech recognition moves toward more unconstrained domains such as conversational speech, we encounter a need to be able to segment (or resegment) waveforms and recognizer output into lin- guistically meaningful units, such a sentences. Toward this end, we present a simple automatic segmenter of transcripts based on N-gram language modeling. We also study the relevance of sev- eral word-level features for segmentation performance. Using only word-level information, we achieve 85% recall and 70% precision on linguistic boundary detection.
-Preamble : Stolcke_1996_Automatic_linguistic.txt
-Aueturs :                                            Andreas Stolcke                   Elizabeth Shriberg
-Biblio : beled as either a segment boundary or a within-segment transition.
+<article>
+  <preamble>Stolcke_1996_Automatic_linguistic.txt</preamble>
+  <titre>AUTOMATIC LINGUISTIC SEGMENTATION OF CONVERSATIONAL SPEECH</titre>
+  <auteur>                                           Andreas Stolcke                   Elizabeth Shriberg</auteur>
+  <abstract>As speech recognition moves toward more unconstrained domains such as conversational speech, we encounter a need to be able to segment (or resegment) waveforms and recognizer output into lin- guistically meaningful units, such a sentences. Toward this end, we present a simple automatic segmenter of transcripts based on N-gram language modeling. We also study the relevance of sev- eral word-level features for segmentation performance. Using only word-level information, we achieve 85% recall and 70% precision on linguistic boundary detection.</abstract>
+  <biblio>beled as either a segment boundary or a within-segment transition.
 Two natural choices for alternative approaches are decision trees
 and a transformation-based, error-driven classifier of the type de-
 veloped by Eric Brill for other tagging problems [2]. Both of these
@@ -50,4 +50,5 @@ not be interpreted as representing the policies of DARPA or the
 NSF.
 3 Such an integration can be achieved in a language model using the max-
 imum entropy paradigm [1], but this would make the estimation process
-considerably more expensive.
+considerably more expensive.</biblio>
+</article>
