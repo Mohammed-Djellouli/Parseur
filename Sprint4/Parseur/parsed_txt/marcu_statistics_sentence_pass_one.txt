@@ -1,0 +1,77 @@
+Titre : Statistics-Based Summarization
+
+Abstract : When humans produce summaries of documents, they do not simply extract sentences and concatenate them. Rather, they create new sentences that are grammati- cal, that cohere with one another, and that capture the eventually use Abstract, Text tuples, which are widely ument. Given that large collections of text/abstract pairs are available online, it is now possible to envision algorithms that are trained to mimic this process. In this paper, we focus on sentence compression, a sim- pler version of this larger challenge. We aim to achieve two goals simultaneously: our compressions should be grammatical, and they should retain the most impor- tant pieces of information. These two goals can con- ﬂict. We devise both noisy-channel and decision-tree approaches to the problem, and we evaluate results against manual compressions and a simple baseline.
+Preamble : marcu_statistics_sentence_pass_one.txt
+Aueturs :                                            Kevin Knight and Daniel Marcu
+Biblio : diﬀerences between the two algorithms. As Table 1
+shows, the performance of the compression algorithms
+is much closer to human performance than baseline per-
+formance; yet, humans perform statistically better than
+our algorithms at p < 0.01.
+When applied to sentences of a diﬀerent genre, the
+performance of the noisy-channel compression algo-
+rithm degrades smoothly, while the performance of the
+decision-based algorithm drops sharply. This is due to
+a few sentences in the Cmplg Corpus that the decision-
+based algorithm over-compressed to only two or three
+words. We suspect that this problem can be ﬁxed if
+the decision-based compression module is extended in
+the style of Magerman (1995), by computing probabil-
+ities across the sequences of decisions that correspond
+to a compressed sentence. Likewise, there are substan-
+tial gains to be had in noisy-channel modeling—we see
+clearly in the data many statistical dependencies and
+processes that are not captured in our simple initial
+models. More grammatical output will come from tak-
+ing account of subcategory and head-modiﬁer statistics
+(in addition to simple word-bigrams), and an expanded
+channel model will allow for more tree manipulation
+possibilities. Work on extending the algorithms pre-
+sented in this paper to compressing multiple sentences
+is currently underway.
+Spring Symposium on Intelligent Text Summarization,
+111–118.
+Jelinek, F. 1997. Statistical Methods for Speech Recog-
+nition. The MIT Press.
+Jing, H., and McKeown, K. 1999. The decomposition
+of human-written summary sentences. In Proceedings
+of the 22nd Conference on Research and Development
+in Information Retrieval (SIGIR–99).
+Knight, K., and Graehl, J. 1998. Machine transliter-
+ation. Computational Linguistics 24(4):599–612.
+Langkilde, I. 2000. Forest-based statistical sentence
+generation. In Proceedings of the 1st Annual Meeting
+of the North American Chapter of the Association for
+Computational Linguistics.
+Linke-Ellis, N. 1999. Closed captioning in Amer-
+ica: Looking beyond compliance. In Proceedings of
+the TAO Workshop on TV Closed Captions for the
+hearing impaired people, 43–59.
+Magerman, D. 1995. Statistical decision-tree models
+for parsing. In Proceedings of the 33rd Annual Meeting
+of the Association for Computational Linguistics, 276–
+283.
+Mani, I., and Maybury, M., eds. 1999. Advances in
+Automatic Text Summarization. The MIT Press.
+Mani, I.; Gates, B.; and Bloedorn, E. 1999. Improving
+summaries by revising them. In Proceedings of the 37th
+Annual Meeting of the Association for Computational
+Linguistics, 558–565.
+McKeown, K.; Klavans, J.; Hatzivassiloglou, V.;
+Barzilay, R.; and Eskin, E. 1999. Towards multidoc-
+ument summarization by reformulation: Progress and
+prospects. In Proceedings of the Sixteenth National
+Conference on Artiﬁcial Intelligence (AAAI–99).
+Quinlan, J. 1993. C4.5: Programs for Machine Learn-
+ing. San Mateo, CA: Morgan Kaufmann Publishers.
+Robert-Ribes, J.; Pfeiﬀer, S.; Ellison, R.; and Burn-
+ham, D. 1999. Semi-automatic captioning of TV pro-
+grams, an Australian perspective. In Proceedings of
+the TAO Workshop on TV Closed Captions for the
+hearing impaired people, 87–100.
+Witbrock, M., and Mittal, V.
+summarization: A statistical approach to generating
+highly condensed non-extractive summaries. In Pro-
+ceedings of the 22nd International Conference on Re-
+search and Development in Information Retrieval (SI-
+GIR’99), Poster Session, 315–316.

@@ -1,0 +1,29 @@
+Titre : Hybrid Headlines: Combining Topics and Sentence Compression
+
+Abstract : This paper presents Topiary, a headline- generation system that creates very short, informative summaries for news stories by combining sentence compres- sion and unsupervised topic discovery. We will show that the combination of linguistically motivated sentence com- pression with statistically selected topic terms performs better than either alone, according to some automatic summary evaluation measures. In addition we de- scribe experimental results establishing an appropriate extrinsic task on which to measure the effect of summarization on human performance. We demonstrate the usefulness of headlines in compar- ison to full texts in the context of this extrinsic task.
+Preamble : ACL2004-HEADLINE.txt
+Aueturs :      David Zajic, Bonnie Dorr, Stacy President         Richard Schwartz
+Biblio : Sabine Bergler, René Witte, Michelle Khalife,
+Zhuoyan Li, and Frank Rudzicz. 2003. Using
+knowledge-poor coreference resolution for text sum-
+marization. In Proceedings of the 2003 Document
+Understanding Conference, Draft Papers, pages 85–
+92, Edmonton, Candada.
+Bonnie Dorr, David Zajic, and Richard Schwartz.
+2003a. Cross-language headline generation for
+hindi. ACM Transactions on Asian Language Infor-      Liang Zhou and Eduard Hovy. 2003. Headline sum-
+mation Processing (TALIP), 2:2.
+Bonnie Dorr, David Zajic, and Richard Schwartz.
+2003b. Hedge trimmer: A parse-and-trim approach
+to headline generation. In Proceedings of the HLT-
+NAACL 2003 Text Summarization Workshop, Ed-
+monton, Alberta, Canada, pages 1–8.
+T. Euler. 2002. Tailoring text using topic words: Se-
+lection and compression. In Proceedings of 13th
+International Workshop on Database and Expert
+Systems Applications (DEXA 2002), 2-6 Septem-
+ber 2002, Aix-en-Provence, France, pages 215–222.
+IEEE Computer Society.
+Kevin Knight and Daniel Marcu. 2000. Statistics-
+based summarization – step one: Sentence com-
+pression. In The 17th National Conference of

@@ -1,0 +1,55 @@
+Titre : Probabilistic Sentence Reduction Using Support Vector Machines
+
+Abstract : This paper investigates a novel application of sup- port vector machines (SVMs) for sentence reduction. We also propose a new probabilistic sentence reduc- tion method based on support vector machine learn- ing. Experimental results show that the proposed methods outperform earlier methods in term of sen- tence reduction performance.
+Preamble : probabilistic_sentence_reduction.txt
+Aueturs :                  Minh Le Nguyen, Akira Shimazu, Susumu Horiguchi
+Biblio : is called a relevant candidate.
+For a given sentence, we used a simple
+method, namely SVMP-R to obtain a re-
+duced sentence by selecting a relevant candi-
+date among the ten top reduced outputs using
+SVMP-10.
+Table 4 depicts the experiment results for
+the baseline methods, SVM-D, SVMP-R, and
+SVMP-10. The results shows that, when ap-
+plied to sentence of a different genre, the per-
+formance of SVMP-10 degrades smoothly, while
+the performance of the deterministic sentence
+reductions (the baselines and SVM determinis-
+tic) drops sharply. This indicates that the prob-    T.T. Hastie and R. Tibshirani, “Classification
+abilistic sentence reduction using support vector
+machine is more stable.
+Table 4 shows that the performance of
+SVMP-10 is also close to the human reduction
+outputs and is better than previous works. In
+addition, SVMP-R outperforms the determin-
+istic sentence reduction algorithms and the dif-
+ferences between SVMP-R’s results and SVMP-
+10 are small. This indicates that we can ob-
+tain reduced sentences which are relevant to the
+headline, while ensuring the grammatical and
+the importance criteria compared to the origi-
+nal sentences.
+Table 4: Experiment results with Benton Cor-
+pus
+Method      Comp      Gramma
+Baseline1   54.14%   7.61 ± 2.10   6.74 ± 1.92      syntax Reference Manual”; Proteus Project,
+Baseline2   53.13%   7.72 ± 1.60   7.02 ± 1.90      New York University (1995).
+SVM-D
+SVMP-R      58.31%   8.25 ± 1.30   7.54 ± 1.39      reduction based on Decision tree model”,
+SVMP-10     57.62%   8.60 ± 1.32   7.71 ± 1.41      Proceedings of 17th Pacific Asia Conference
+Human
+6     Conclusions
+We have presented a new probabilistic sentence
+reduction approach that enables a long sentence
+to be rewritten into reduced sentences based on
+support vector models. Our methods achieves
+better performance when compared with earlier
+methods. The proposed reduction approach can
+generate multiple best outputs. Experimental
+results showed that the top 10 reduced sentences
+returned by the reduction process might yield
+accuracies higher than previous work. We be-
+lieve that a good ranking method might improve
+the sentence reduction performance further in a
+text.

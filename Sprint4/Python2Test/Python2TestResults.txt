@@ -1,0 +1,1 @@
+Temps écoulé pour lire le fichier: 0.005521 secondes

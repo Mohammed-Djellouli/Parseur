@@ -1,0 +1,135 @@
+Titre : Multi-Candidate Reduction: Sentence Compression as a Tool for Document Summarization Tasks∗
+
+Abstract : This article examines the application of two single-document sentence compression techniques to the problem of multi-document summarization—a “parse-and-trim” approach and a statisti- cal noisy-channel approach. We introduce the Multi-Candidate Reduction (MCR) framework for multi-document summarization, in which many compressed candidates are generated for each source sentence. These candidates are then selected for inclusion in the final summary based on a com- bination of static and dynamic features. Evaluations demonstrate that sentence compression is a valuable component of a larger multi-document summarization framework. Keywords: headline generation, summarization, parse-and-trim, Hidden Markov Model PACS: Artificial intelligence, 07.05.Mh; Computer science and technology, 89.20.Ff; Spoken lan- guages, processing of, 43.71.Sy
+Preamble : compression.txt
+Aueturs :                      David Zajic1 , Bonnie J. Dorr1 , Jimmy Lin1 , Richard Schwartz2
+Biblio : L. Bahl, F. Jelinek, and R. Mercer. 1983. A maximum likelihood approach to continuous speech
+recognition. IEEE Transactions on Pattern Analysis and Machine Intelligence, 5(2):179–190.
+M. Banko, V. Mittal, and M. Witbrock. 2000. Headline generation based on statistical translation.
+In Proceedings of the 38th Annual Meeting of the Association for Computational Linguistics (ACL
+2000), pages 318–325, Hong Kong.
+R. Barzilay, N. Elhadad, and K. McKeown. 2002. Inferring strategies for sentence ordering in multi-
+document news summarization. Journal of Artificial Intelligence Research, 17:35–55.
+L. Baum. 1972. An inequality and associated maximization technique in statistical estimation of
+probabilistic functions of a Markov process. Inequalities, 3:1–8.
+S. Bergler, R. Witte, M. Khalife, Z. Li, and F. Rudzicz. 2003. Using knowledge-poor coreference
+resolution for text summarization. In Proceedings of the HLT-NAACL 2003 Text Summarization
+Workshop and Document Understanding Conference (DUC 2003), pages 85–92, Edmonton, Alberta.
+D. Bikel, R. Schwartz, and R. Weischedel. 1999. An algorithm that learns what’s in a name. Machine
+Learning, 34(1/3):211–231.
+S. Blair-Goldensohn, D. Evans, V. Hatzivassiloglou, K. McKeown, A. Nenkova, R. Passonneau,
+B. Schiffman, A. Schlaikjer, A. Siddharthan, and S. Siegelman. 2004. Columbia University
+at DUC 2004. In Proceedings of the 2004 Document Understanding Conference (DUC 2004) at
+HLT/NAACL 2004, pages 23–30, Boston, Massachusetts.
+P. Brown, J. Cocke, S. Pietra, V. Pietra, F. Jelinek, J. Lafferty, R. Mercer, and P. Roossin. 1990. A
+statistical approach to machine translation. Computational Linguistics, 16(2):79–85.
+J. Carbonell and J. Goldstein. 1998. The use of MMR, diversity-based reranking for reordering
+documents and producing summaries. In Proceedings of the 21st Annual International ACM SIGIR
+Conference on Research and Development in Information Retrieval (SIGIR 1998), pages 335–336,
+Melbourne, Australia.
+Eugene Charniak. 2000. A Maximum-Entropy-Inspired Parser. In Proceedings of the First Meeting
+of the North American Chapter of the Association for Computational Linguistics (NAACL 2000),
+pages 132–139, Seattle, Washington.
+J. Clarke and M. Lapata. 2006. Models for sentence compression: A comparison across domains,
+training requirements and evaluation measures. In Proceedings of the 21st International Confer-
+ence on Computational Linguistics and 44th Annual Meeting of the Association for Computational
+Linguistics (COLING/ACL 2006), pages 377–384, Sydney, Australia.
+J. Conroy, J. Schlesinger, and J. Goldstein. 2005. CLASSY query-based multi-document summariza-
+tion. In Proceedings of the 2005 Document Understanding Conference (DUC-2005) at NLT/EMNLP
+2005, Vancouver, Canada.
+J. Conroy, J. Schlesinger, D. O’Leary, and J. Goldstein. 2006. Back to basics: CLASSY 2006. In
+Proceedings of the 2006 Document Understanding Conference (DUC 2006) at HLT/NAACL 2006,
+New York, New York.
+D. Cutting, J. Pedersen, and P. Sibun. 1992. A practical part-of-speech tagger. In Proceedings of the
+Third Conference on Applied Natural Language Processing, Trento, Italy.
+Hoa Dang and Donna Harman. 2006. Proceedings of the 2006 Document Understanding Conference
+(DUC 2006) at HLT/NAACL 2006.
+B. Dorr and T. Gaasterland. this special issue, 2007. Exploiting aspectual features and connecting
+words for summarization-inspired temporal-relation extraction. Information Processing and Man-
+agement.
+B. Dorr, D. Zajic, and R. Schwartz. 2003a. Cross-language headline generation for Hindi. ACM
+Transactions on Asian Language Information Processing (TALIP), 2(3):270–289.
+B. Dorr, D. Zajic, and R. Schwartz. 2003b. Hedge Trimmer: A parse-and-trim approach to headline
+generation. In Proceedings of the HLT-NAACL 2003 Text Summarization Workshop and Document
+Understanding Conference (DUC 2003), pages 1–8, Edmonton, Alberta.
+T. Dunning. 1994. Statistical identification of language. Technical Report MCCS 94-273, New Mexico
+State University.
+T. Euler. 2002. Tailoring text using topic words: Selection and compression. In Proceedings of 13th
+International Workshop on Database and Expert Systems Applications (DEXA 2002), pages 215–
+222, Aix-en-Provence, France.
+J. Goldstein, V. Mittal, J. Carbonell, and M. Kantrowitz. 2000. Multi-document summarization by
+sentence extraction. In Proceedings of ANLP/NAACL 2000 Workshop on Automatic Summariza-
+tion, pages 40–48.
+D. Harman and M. Liberman. 1993. TIPSTER Complete. Linguistic Data Consortium (LDC),
+Philadelphia.
+H. Jing and K. McKeown. 2000. Cut and paste based text summarization. In Proceedings of the First
+Meeting of the North American Chapter of the Association for Computational Linguistics (NAACL
+2000), pages 178–185, Seattle, Washington.
+B. Klimt and Y. Yang. 2004. Introducing the Enron Corpus. In Proceedings of the First Conference
+on Email and Anti-Spam (CEAS), Mountain View, California.
+K. Knight and D. Marcu. 2000. Statistics-based summarization—step one: Sentence compression. In
+Proceedings of the Seventeenth National Conference on Artificial Intelligence (AAAI-2000), Austin,
+Texas.
+K. Knight and D. Marcu. 2002. Summarization beyond sentence extraction: A probabilistic approach
+to sentence compression. Artificial Intelligence, 139(1):91–107.
+M. Lapata. 2003. Probabilistic text structuring: Experiments with sentence ordering. In Proceedings
+of the 42nd Annual Meeting of the Association for Computational Linguistics (ACL 2004), pages
+545–552, Barcelona, Spain.
+David Dolan Lewis. 1999. An evaluation of phrasal and clustered representations on a text categoriza-
+tion task. In Proceedings of the 15th Annual International ACM SIGIR Conference on Research
+and Development in Information Retrieval (SIGIR 1992), pages 37–50, Copenhagen, Denmark.
+C.-Y. Lin and E. Hovy. 2003. Automatic evaluation of summaries using n-gram co-occurrence statis-
+tics. In Proceedings of the 2003 Human Language Technology Conference and the North American
+Chapter of the Association for Computational Linguistics Annual Meeting (HLT/NAACL 2003),
+pages 71–78, Edmonton, Alberta.
+I. Mårdh. 1980. Headlinese: On the Grammar of English Front Page Headlines. Malmo.
+E. Mays, F. Damerau, and R. Mercer. 1990. Context-based spelling correction. In Proceedings of IBM
+Natural Language ITL, pages 517–522, Paris, France.
+S. Miller, L. Ramshaw, H. Fox, and R. Weischedel. 2000. A novel use of statistical parsing to extract
+information from text. In Proceedings of the First Meeting of the North American Chapter of the
+Association for Computational Linguistics (NAACL 2000), pages 226–233, Seattle, Washington.
+S. Muresan, E. Tzoukermann, and J. Klavans. 2001. Combining linguistic and machine learning
+techniques for email. In Proceedings of the ACL/EACL 2001 Workshop on Computational Natural
+Language Learning (ConLL), pages 290–297, Toulouse, France.
+N. Okazaki, Y. Matsuo, and M. Ishizuka. 2004. Improving chronological sentence ordering by prece-
+dence relation. In Proceedings of the 20th International Conference on Computational Linguistics
+(COLING 2004), pages 750–756, Geneva, Switzerland.
+M. Porter. 1980. An algorithm for suffix stripping. Program, 14(3):130–137.
+D. Radev, T. Allison, S. Blair-Goldensohn, J. Blitzer, A. Çelebi, S. Dimitrov, E. Drabek, A. Hakim,
+W. Lam, D. Liu, J. Otterbacher, H. Qi, H. Saggion, S. Teufel, M. Topper, A. Winkel, and Z. Zhang.
+2004. MEAD—a platform for multidocument multilingual text summarization. In Proceedings of
+the 4th International Conference on Language Resources and Evaluation (LREC 2004), Lisbon,
+Portugal.
+R. Schwartz, T. Imai, F. Jubala, L. Nguyen, and J. Makhoul. 1997. A maximum likelihood model
+for topic classification of broadcast news. In Proceedings of the Fifth European Speech Communica-
+tion Association Conference on Speech Communication and Technology (Eurospeech-97), Rhodes,
+Greece.
+S. Sista, R. Schwartz, T. Leek, and J. Makhoul. 2002. An algorithm for unsupervised topic discovery
+from broadcast news stories. In Proceedings of the 2002 Human Language Technology Conference
+(HLT), pages 99–103, San Diego, California.
+J. Turner and E. Charniak. 2005. Supervised and unsupervised learning for sentence compression.
+In Proceedings of the 43rd Annual Meeting of the Association for Computational Linguistics (ACL
+2005), pages 290–297, Ann Arbor, Michigan.
+L. Vanderwende, H. Suzuki, and C. Brockett. 2006. Microsoft Research at DUC2006: Task-focused
+summarization with sentence simplification and lexical expansion. In Proceedings of the 2006 Doc-
+ument Understanding Conference (DUC 2006) at HLT/NAACL 2006, New York, New York.
+A. Viterbi. 1967. Error bounds for convolution codes and an asymptotically optimal decoding algo-
+rithm. IEEE Transactions on Information Theory, 13:260–269.
+R. Wang, N. Stokes, W. Doran, E. Newman, J. Carthy, and J. Dunnion. 2005. Comparing Topiary-
+style approaches to headline generation. In Lecture Notes in Computer Science: Advances in
+Information Retrieval: 27th European Conference on IR Research (ECIR 2005), volume 3408,
+Santiago de Compostela, Spain. Springer Berlin / Heidelberg.
+D. Zajic, B. Dorr, and R. Schwartz. 2004. BBN/UMD at DUC-2004: Topiary. In Proceedings of
+the 2004 Document Understanding Conference (DUC 2004) at NLT/NAACL 2004, pages 112–119,
+Boston, Massachusetts.
+D. Zajic, B. Dorr, J. Lin, and R. Schwartz. 2005a. UMD/BBN at MSE2005. In Proceedings of the
+MSE2005 Track of the ACL 2005 Workshop on Intrinsic and Extrinsic Evaluation Measures for
+MT and/or Summarization, Ann Arbor, Michigan.
+D. Zajic, B. Dorr, R. Schwartz, C. Monz, and J. Lin. 2005b. A sentence-trimming approach to
+multi-document summarization. In Proceedings of the 2005 Document Understanding Conference
+(DUC-2005) at NLT/EMNLP 2005, pages 151–158, Vancouver, Canada.
+D. Zajic. 2007. Multiple Alternative Sentence Compressions (MASC) as a Tool for Automatic Sum-
+marization Tasks. Ph.D. thesis, University of Maryland, College Park.
+L. Zhou and E. Hovy. 2003. Headline summarization at ISI. In Proceedings of the HLT-NAACL
+2003 Text Summarization Workshop and Document Understanding Conference (DUC 2003), pages
+174–178, Edmonton, Alberta.
