@@ -197,6 +197,61 @@ string extraireBiblio(const string& contenu) {
     return biblio;
 }
 
+
+string extraireCorps(const string& contenu) {
+    istringstream iss(contenu);
+    string ligne, corps = "";
+    bool inCorps = false;
+    bool debutTrouve = false; 
+
+regex debutClassique(R"(^\s*(2|II)(\.\d+)?\s*[\.\-\–]?\s+(Related Work|From Full Sentence to Compressed
+Sentence|Performance Measure, Corpora for Evaluation|Support Vector Machine|THE IMPORTANCE OF LINGUISTIC|Previous Work|Model Architectures|RELATED WORK|Sentence Compression)\b)", regex_constants::icase);
+
+    regex abstractFin(R"(^\s*abstract\s*$)", std::regex_constants::icase); 
+    bool apresAbstract = false;
+
+    regex finCorps(R"(\b(Conclusion|Conclusions|Discussion|Discussions|Summary|Future Work|Acknowledgments|Acknowledgements|References|Bibliography)\b)", std::regex_constants::icase);
+    regex ligneVide(R"(^\s*$)");
+
+
+    while (getline(iss, ligne)) {
+
+        ligne.erase(std::remove(ligne.begin(), ligne.end(), '\r'), ligne.end());
+
+        if (!debutTrouve) {
+            if (regex_search(ligne, debutClassique)) {
+                inCorps = true;
+                debutTrouve = true;
+                continue; 
+            }
+        }
+
+        if (inCorps) {
+            if (regex_search(ligne, finCorps)) {
+                break; 
+            }
+            if (!regex_match(ligne, ligneVide)) {
+                corps += ligne + "\n";
+            }
+        }
+    }
+
+    if (corps.empty()) {
+        return "Corps introuvable";
+    }
+
+    size_t first = corps.find_first_not_of(" \t\n\r");
+    if (string::npos == first) {
+        return "Corps introuvable (que des espaces)";
+    }
+    size_t last = corps.find_last_not_of(" \t\n\r");
+    corps = corps.substr(first, (last - first + 1));
+
+    return corps;
+}
+
+    
+
 vector<string> extraireAuteurs(const string& contenu) {
     istringstream iss(contenu);
     string ligne;
@@ -325,7 +380,7 @@ int main(int argc, char* argv[]) {
             stringstream buffer;
             buffer << fichierEntree.rdbuf();
             string contenu = buffer.str();
-
+            string corps = extraireCorps(contenu);
             //  Extraction
             string titre = extraireTitre(contenu);
             string resume = extraireAbstract(contenu);
@@ -359,6 +414,7 @@ int main(int argc, char* argv[]) {
                     fichierSortie << "  <auteur>" << a << "</auteur>\n";
                 }
                 fichierSortie << "  <abstract>" << resume << "</abstract>\n";
+                fichierSortie << "  <corps>" << corps << "</corps>\n";
                 fichierSortie << "  <biblio>"<<biblio<<"</biblio>\n";
                 fichierSortie << "</article>\n";
             }
