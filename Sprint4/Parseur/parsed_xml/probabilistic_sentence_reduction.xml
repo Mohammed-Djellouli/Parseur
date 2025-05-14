@@ -53,4 +53,5 @@ accuracies higher than previous work. We be-
 lieve that a good ranking method might improve
 the sentence reduction performance further in a
 text.</biblio>
+  <conclusion>We have presented a new probabilistic sentence          tor machines and comparison to regularized reduction approach that enables a long sentence         likelihood methods,” in Advances in Large to be rewritten into reduced sentences based on         Margin Classifiers, Cambridege, MA: MIT support vector models. Our methods achieves             Press, 2000. better performance when compared with earlier        B. Scholkopf et al, “Comparing Support Vec- methods. The proposed reduction approach can            tor Machines with Gausian Kernels to Radius generate multiple best outputs. Experimental            Basis Function Classifers”, IEEE Trans. Sig- results showed that the top 10 reduced sentences        nal Procesing, 45, pp. 2758-2765, 1997. returned by the reduction process might yield accuracies higher than previous work. We be- lieve that a good ranking method might improve the sentence reduction performance further in a text.</conclusion>
 </article>

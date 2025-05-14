@@ -282,10 +282,178 @@ vector<string> extraireAuteurs(const string& contenu) {
 }
 
 
+string extraireConclusion(const string& contenu) {
+    istringstream iss(contenu);
+    string ligne, conclusion = "";
+    bool inConclusion = false;
+    // Regex très souple pour toutes les variantes vues
+    regex debutConclusion(R"((^|\s)\d{1,2}(\.|)?\s+(Conclusion|Conclusions)(\s+and\s+Future\s+Work)?\b)", regex_constants::icase);
+    regex finConclusion(R"(^\s*(Acknowledgments?|Appendix|References?|Biography|Biosketch|Thanks))", regex_constants::icase);
+    while (getline(iss, ligne)) {
+        ligne.erase(remove(ligne.begin(), ligne.end(), '\r'), ligne.end());
+        // Début détecté
+        if (!inConclusion && regex_search(ligne, debutConclusion)) {
+            inConclusion = true;
+            continue; // skip title line
+        }
+        // Fin détectée
+        if (inConclusion && regex_search(ligne, finConclusion)) break;
+
+        if (inConclusion && !ligne.empty()) {
+            conclusion += ligne + " ";
+        }
+    }
+    // Nettoyage
+    conclusion.erase(remove_if(conclusion.begin(), conclusion.end(), [](char c) {
+        return static_cast<unsigned char>(c) < 32 && c != '\n' && c != '\t';
+    }), conclusion.end());
+    conclusion.erase(0, conclusion.find_first_not_of(" \t\n"));
+    conclusion.erase(conclusion.find_last_not_of(" \t\n") + 1);
+    return conclusion.empty() ? "Conclusion introuvable" : conclusion;
+}
 
 
+string extraireIntroduction(const string& contenu) {
+    istringstream iss(contenu);
+    string ligne;
+    vector<string> lignes;
+
+    // Regex pour séparer les colonnes dans les documents en deux colonnes
+    regex separateurColonnes(" {7,}");
+
+    //  Amélioration : détection plus souple du titre "Introduction"
+    regex debutIntro(R"((^|\s)((\d+|[IVXLC]+)?[\.\s]*)?(Introduction)\b)", regex_constants::icase);
 
 
+    // Détection d’une nouvelle section : numéro suivi d’un titre (ex. "2 Related Work")
+    regex nouvelleSection(R"(^\s*$|^\s*(\d+|[IVXLC]+)[\.\s]+[A-Z].*|^\s*((\d+|[IVXLC]+)(\.\d+)?\.?)\s{1,}(Sentence|[A-Z][^\n]*)|^\s*Figure\s+\d+)", regex_constants::icase);
+
+
+    // Mots-clés pour l’abstract ou résumé
+    regex motCleAbstract(R"(\b(Abstract|Résumé)\b)", regex_constants::icase);
+
+    // Étape 1 : charger toutes les lignes
+    while (getline(iss, ligne)) {
+        ligne.erase(remove(ligne.begin(), ligne.end(), '\r'), ligne.end()); // Nettoyer les retours chariot
+        lignes.push_back(ligne);
+    }
+
+    int indexIntro = -1;
+
+    // Étape 2 : repérer la ligne "Introduction"
+    for (size_t i = 0; i < lignes.size(); ++i) {
+        string l = lignes[i];
+        l.erase(0, l.find_first_not_of(" \t\n"));
+        l.erase(l.find_last_not_of(" \t\n") + 1);
+
+        if (regex_search(l, debutIntro)) {
+            indexIntro = i;
+            break;
+        }
+    }
+
+    if (indexIntro == -1) {
+        // Fallback : essayer d'extraire le premier gros paragraphe avant la première section numérotée
+        string tentativeIntro = "";
+        for (size_t i = 0; i < lignes.size(); ++i) {
+            string test = lignes[i];
+            test.erase(0, test.find_first_not_of(" \t\n"));
+            test.erase(test.find_last_not_of(" \t\n") + 1);
+
+            // Arrêt si on tombe sur une vraie section (comme "1 Related Work", "2 Methodology", etc.)
+            if (regex_match(test, regex(R"(^\s*(\d+|[IVXLC]+)[\.\s]+[A-Z].*)"))) {
+                break;
+            }
+
+            if (!test.empty()) {
+                tentativeIntro += test + " ";
+            }
+        }
+
+        if (!tentativeIntro.empty()) {
+            // Nettoyage
+            tentativeIntro.erase(0, tentativeIntro.find_first_not_of(" \t\n"));
+            tentativeIntro.erase(tentativeIntro.find_last_not_of(" \t\n") + 1);
+            return tentativeIntro;
+        }
+
+        return "Introduction introuvable";
+    }
+
+
+    string introduction = "";
+
+    // Étape 3 : remonter les lignes avant "Introduction" si elles sont liées (ex. résumé structuré en colonnes)
+    for (int i = indexIntro - 1; i >= 0; --i) {
+        string line = lignes[i];
+        smatch match;
+
+        if (regex_search(line, motCleAbstract)) break;
+        if (!regex_search(line, match, separateurColonnes)) break;
+
+        string left = match.prefix().str();
+        string right = match.suffix().str();
+
+        left.erase(0, left.find_first_not_of(" \t\n"));
+        left.erase(left.find_last_not_of(" \t\n") + 1);
+        right.erase(0, right.find_first_not_of(" \t\n"));
+        right.erase(right.find_last_not_of(" \t\n") + 1);
+
+        if (left.empty() && right.empty()) break;
+
+        introduction = (left + " " + right + " ") + introduction;
+    }
+
+    // Étape 4 : concaténer les lignes de l’introduction en descendant
+    // Étape 4 : concaténer les lignes de l’introduction EN COMMENÇANT PAR LA LIGNE D’EN-TÊTE
+    string introLigne = lignes[indexIntro];
+    string introTexte = introLigne;
+    introTexte.erase(0, introTexte.find_first_not_of(" \t\n"));
+    introTexte.erase(introTexte.find_last_not_of(" \t\n") + 1);
+
+    // Si la ligne contient autre chose que juste "Introduction", ne pas l’ajouter brute
+    if (!regex_match(introTexte, debutIntro)) {
+        introduction += introLigne + " ";
+    }
+
+
+    for (size_t i = indexIntro + 1; i < lignes.size(); ++i) {
+        string line = lignes[i];
+
+        // Nettoyer la ligne
+        string test = line;
+        test.erase(0, test.find_first_not_of(" \t\n"));
+        test.erase(test.find_last_not_of(" \t\n") + 1);
+
+        // Stop si nouvelle section OU si ligne complètement vide
+        if (test.empty() || regex_search(test, nouvelleSection)) break;
+
+        smatch match;
+        string left = line, right = "";
+
+        if (regex_search(line, match, separateurColonnes)) {
+            left = match.prefix().str();
+            right = match.suffix().str();
+        }
+
+        left.erase(0, left.find_first_not_of(" \t\n"));
+        left.erase(left.find_last_not_of(" \t\n") + 1);
+        right.erase(0, right.find_first_not_of(" \t\n"));
+        right.erase(right.find_last_not_of(" \t\n") + 1);
+
+        string merged = left;
+        if (!right.empty()) merged += " " + right;
+
+        if (!merged.empty()) introduction += merged + " ";
+    }
+
+
+    // Étape 5 : nettoyage final
+    introduction.erase(0, introduction.find_first_not_of(" \t\n"));
+    introduction.erase(introduction.find_last_not_of(" \t\n") + 1);
+
+    return introduction;
+}
 
 // === Fonction principale ===
 int main(int argc, char* argv[]) {
@@ -331,6 +499,8 @@ int main(int argc, char* argv[]) {
             string resume = extraireAbstract(contenu);
             string biblio = extraireBiblio(contenu);
             vector<string> auteurs = extraireAuteurs(contenu);
+            string conclusion = extraireConclusion(contenu);
+
 
 
             //  Écriture dans fichier final
@@ -360,6 +530,7 @@ int main(int argc, char* argv[]) {
                 }
                 fichierSortie << "  <abstract>" << resume << "</abstract>\n";
                 fichierSortie << "  <biblio>"<<biblio<<"</biblio>\n";
+                fichierSortie << "  <conclusion>" << conclusion << "</conclusion>\n";
                 fichierSortie << "</article>\n";
             }
 

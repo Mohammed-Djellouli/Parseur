@@ -51,4 +51,5 @@ NSF.
 3 Such an integration can be achieved in a language model using the max-
 imum entropy paradigm [1], but this would make the estimation process
 considerably more expensive.</biblio>
+  <conclusion>for speech disfluencies. In Proceedings IEEE Conference on We have argued for the need for automatic speech segmentation al-                 Acoustics, Speech and Signal Processing, volume I, pages 405– gorithms that can identify linguistically motivated, sentence-level               408, Atlanta, GA, May 1996. units of speech. We have shown that transcribed speech can be segmented linguistically with good accuracy by using an N-gram language model for the locations of the hidden segment boundaries. We studied several word-level features for possible incorporation in the model, and found that best performance so far was achieved with a combination of function ‘cue’ words, POS labels, and turn markers.</conclusion>
 </article>

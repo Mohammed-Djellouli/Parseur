@@ -133,4 +133,5 @@ marization Tasks. Ph.D. thesis, University of Maryland, College Park.
 L. Zhou and E. Hovy. 2003. Headline summarization at ISI. In Proceedings of the HLT-NAACL
 2003 Text Summarization Workshop and Document Understanding Conference (DUC 2003), pages
 174–178, Edmonton, Alberta.</biblio>
+  <conclusion>This work presents Multi-Candidate Reduction, a general architecture for multi-document summa- rization. The framework integrates successful single-document compression techniques that we have previously developed. MCR is motivated by the insight that multiple candidate compressions of source sentences should be made available to subsequent processing modules, which may have access to more information for summary construction. This is implemented in a dynamic feature-based sentence se- lector that iteratively builds a summary from compressed variants. Evaluations show that sentence compression plays an important role in multi-document summarization and that our MCR framework is both flexible and extensible.</conclusion>
 </article>
