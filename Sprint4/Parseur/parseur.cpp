@@ -7,9 +7,44 @@
 #include <algorithm>
 #include <set>
 #include <iterator>
+#include <vector>
+#include <iomanip>
+#include <cstdlib> // Pour la fonction system
 
 using namespace std;
 namespace fs = std::filesystem;
+
+// Définition de la fonction d'affichage du menu
+int afficherMenuFichiers(const vector<string>& fichiers) {
+    cout << "\n=== Sélection du fichier à traiter ===\n\n";
+
+    // Afficher la liste des fichiers
+    for (size_t i = 0; i < fichiers.size(); ++i) {
+        cout << setw(3) << i+1 << ". " << fichiers[i] << endl;
+    }
+
+    cout << setw(3) << 0 << ". Traiter tous les fichiers" << endl;
+    cout << setw(3) << fichiers.size()+1 << ". Quitter" << endl;
+
+    cout << "\nVotre choix : ";
+    int choix;
+    cin >> choix;
+
+    // Validation du choix
+    while (choix < 0 || choix > static_cast<int>(fichiers.size()+1)) {
+        cout << "Choix invalide. Réessayez : ";
+        cin >> choix;
+    }
+
+    return choix;
+}
+
+// Définition de la fonction de conversion PDF → TXT
+bool convertirPDFenTXT(const string& cheminPDF, const string& cheminTXT) {
+    string commande = "pdftotext -layout -enc UTF-8 -nopgbrk \"" + cheminPDF + "\" \"" + cheminTXT + "\"";
+    int result = system(commande.c_str());
+    return result == 0;
+}
 
 // === Fonction extraction Abstract ===
 string extraireAbstract(const string& contenu) {
@@ -202,7 +237,7 @@ vector<string> extraireAuteurs(const string& contenu) {
     string ligne;
     vector<string> lignes;
     regex emailPattern(R"(([\w\.-]+,?[\w\.-]*)\s*@[\w\.-]+\.\w+)");
-    regex ignorerPattern(R"(University|Universiteit|Way|Technologies|Laboratory|Space|Institut|Department|School|Laboratoire|Centre|College|Inc|Place|Parkway|France|Canada|Belgium|JAPAN|USA|UK|arXiv|SRI|Google|Submitted|published|École|Polytechnique)", regex_constants::icase);
+    regex ignorerPattern(R"(University|Universiteit|Way|Technologies|Laboratory|Space|Institut|Department|School|Laboratoire|Centre|College|Inc|Place|Parkway|France|Canada|Belgium|JAPAN|USA|UK|arXiv|SRI|Google|Submitted|published|École|Polytechnique)", regex_constants::icase);
     regex ligneVide(R"(^\s*$)");
     regex ligneNom(R"(([A-Z][a-z]+([ -][A-Z][a-z]+)+))");
     regex separateurColonnes(" {7,}");
@@ -216,26 +251,25 @@ vector<string> extraireAuteurs(const string& contenu) {
 
     // 1. Recherche autour des emails
     for (size_t i = 0; i < lignes.size(); ++i) {
-    smatch emailMatch;
-    if (regex_search(lignes[i], emailMatch, emailPattern)) {
-        // Ligne contenant un email : extraire la partie gauche (avant l'email)
-        string ligneAvecEmail = lignes[i];
-        size_t posEmail = ligneAvecEmail.find(emailMatch[0].str());
-        string partieGauche = ligneAvecEmail.substr(0, posEmail);
+        smatch emailMatch;
+        if (regex_search(lignes[i], emailMatch, emailPattern)) {
+            // Ligne contenant un email : extraire la partie gauche (avant l'email)
+            string ligneAvecEmail = lignes[i];
+            size_t posEmail = ligneAvecEmail.find(emailMatch[0].str());
+            string partieGauche = ligneAvecEmail.substr(0, posEmail);
 
-        // Nettoyage
-        partieGauche.erase(0, partieGauche.find_first_not_of(" \t"));
-        partieGauche.erase(partieGauche.find_last_not_of(" \t") + 1);
-        partieGauche = regex_replace(partieGauche, regex(R"([0-9]+)"), "");
-        partieGauche = regex_replace(partieGauche, regex(R"([,;])"), "");
+            // Nettoyage
+            partieGauche.erase(0, partieGauche.find_first_not_of(" \t"));
+            partieGauche.erase(partieGauche.find_last_not_of(" \t") + 1);
+            partieGauche = regex_replace(partieGauche, regex(R"([0-9]+)"), "");
+            partieGauche = regex_replace(partieGauche, regex(R"([,;])"), "");
 
-        // Vérifie si la partie gauche ressemble à un nom
-        if (!partieGauche.empty() && !regex_search(partieGauche, ignorerPattern) && regex_search(partieGauche, ligneNom)) {
-            auteursTrouves.insert(partieGauche);
+            // Vérifie si la partie gauche ressemble à un nom
+            if (!partieGauche.empty() && !regex_search(partieGauche, ignorerPattern) && regex_search(partieGauche, ligneNom)) {
+                auteursTrouves.insert(partieGauche);
+            }
         }
     }
-}
-
 
     // 2. Fallback haut du fichier (colonnes)
     if (auteursTrouves.empty()) {
@@ -281,6 +315,57 @@ vector<string> extraireAuteurs(const string& contenu) {
     return vector<string>(auteursTrouves.begin(), auteursTrouves.end());
 }
 
+string extraireDiscussion(const string& contenu) {
+    istringstream iss(contenu);
+    string ligne, discussion = "";
+    bool inDiscussion = false;
+
+    regex debutDiscussion(R"(\b(Discussion|DISCUSSION|Discussion and Conclusion)\b)", regex_constants::icase);
+    regex finDiscussion(R"(\b(Conclusion|CONCLUSION|References|Bibliography|Références|Works Cited|Acknowledgements?)\b)", regex_constants::icase);
+    regex separateurColonnes(" {7,}");
+
+    vector<string> lignes;
+    while (getline(iss, ligne)) {
+        ligne.erase(remove(ligne.begin(), ligne.end(), '\r'), ligne.end());
+        lignes.push_back(ligne);
+    }
+
+    for (size_t i = 0; i < lignes.size(); ++i) {
+        string currentLine = lignes[i];
+        smatch match;
+
+        if (regex_search(currentLine, match, separateurColonnes)) {
+            string left = match.prefix().str();
+            string right = match.suffix().str();
+            left.erase(0, left.find_first_not_of(" \t\n"));
+            left.erase(left.find_last_not_of(" \t\n") + 1);
+            right.erase(0, right.find_first_not_of(" \t\n"));
+            right.erase(right.find_last_not_of(" \t\n") + 1);
+            currentLine = (regex_search(right, debutDiscussion) || regex_search(right, finDiscussion)) ? right : left;
+        }
+
+        currentLine.erase(0, currentLine.find_first_not_of(" \t\n"));
+        currentLine.erase(currentLine.find_last_not_of(" \t\n") + 1);
+
+        if (!inDiscussion && regex_search(currentLine, debutDiscussion)) {
+            inDiscussion = true;
+            continue;
+        }
+
+        if (inDiscussion) {
+            if (regex_search(currentLine, finDiscussion)) break;
+            if (!currentLine.empty()) {
+                discussion += currentLine + " ";
+            }
+        }
+    }
+
+    if (discussion.empty()) return "Discussion introuvable";
+
+    discussion.erase(0, discussion.find_first_not_of(" \t\n"));
+    discussion.erase(discussion.find_last_not_of(" \t\n") + 1);
+    return discussion;
+}
 
 string extraireConclusion(const string& contenu) {
     istringstream iss(contenu);
@@ -405,7 +490,6 @@ string extraireIntroduction(const string& contenu) {
     }
 
     // Étape 4 : concaténer les lignes de l’introduction en descendant
-    // Étape 4 : concaténer les lignes de l’introduction EN COMMENÇANT PAR LA LIGNE D’EN-TÊTE
     string introLigne = lignes[indexIntro];
     string introTexte = introLigne;
     introTexte.erase(0, introTexte.find_first_not_of(" \t\n"));
@@ -455,9 +539,72 @@ string extraireIntroduction(const string& contenu) {
     return introduction;
 }
 
+// Fonction pour traiter un fichier spécifique
+void traiterFichier(const string& cheminFichier, const string& dossierSortie, bool modeTexte) {
+    string nomOriginal = fs::path(cheminFichier).filename().string();
+    string nomModifie = nomOriginal;
+    replace(nomModifie.begin(), nomModifie.end(), ' ', '_');
+
+    ifstream fichierEntree(cheminFichier);
+    if (!fichierEntree) {
+        cerr << "Erreur ouverture fichier : " << nomOriginal << endl;
+        return;
+    }
+
+    stringstream buffer;
+    buffer << fichierEntree.rdbuf();
+    string contenu = buffer.str();
+
+    // Extraction
+    string titre = extraireTitre(contenu);
+    string resume = extraireAbstract(contenu);
+    string biblio = extraireBiblio(contenu);
+    vector<string> auteurs = extraireAuteurs(contenu);
+    string discussion = extraireDiscussion(contenu);
+    string conclusion = extraireConclusion(contenu);
+    string introduction = extraireIntroduction(contenu);
+
+    // Écriture dans fichier final
+    string extension = modeTexte ? ".txt" : ".xml";
+    string cheminSortie = dossierSortie + "/" + fs::path(nomModifie).stem().string() + extension;
+
+    ofstream fichierSortie(cheminSortie);
+    if (!fichierSortie) {
+        cerr << "Erreur création fichier sortie : " << cheminSortie << endl;
+        return;
+    }
+
+    if (modeTexte) {
+        fichierSortie << "Titre : " << titre << "\n\n";
+        fichierSortie << "Introduction : " << introduction << "\n\n";
+        fichierSortie << "Abstract : " << resume << "\n";
+        fichierSortie << "Discussion : " << discussion << "\n";
+        fichierSortie << "Preamble : " << nomModifie << "\n";
+        for (const string& a : auteurs) {
+            fichierSortie << "Auteurs : " << a << "\n";
+        }
+        fichierSortie << "Conclusion : " << conclusion << "\n\n";
+        fichierSortie << "Biblio : " << biblio << "\n";
+    } else {
+        fichierSortie << "<article>\n";
+        fichierSortie << "  <preamble>" << nomModifie << "</preamble>\n";
+        fichierSortie << "  <titre>" << titre << "</titre>\n";
+        for (const string& a : auteurs) {
+            fichierSortie << "  <auteur>" << a << "</auteur>\n";
+        }
+        fichierSortie << "  <introduction>" << introduction << "</introduction>\n";
+        fichierSortie << "  <abstract>" << resume << "</abstract>\n";
+        fichierSortie << "  <discussion>" << discussion << "</discussion>\n";
+        fichierSortie << "  <conclusion>" << conclusion << "</conclusion>\n";
+        fichierSortie << "  <biblio>" << biblio << "</biblio>\n";
+        fichierSortie << "</article>\n";
+    }
+
+    cout << " Fichier traité : " << nomOriginal << " ➜ " << cheminSortie << endl;
+}
+
 // === Fonction principale ===
 int main(int argc, char* argv[]) {
-    //  Gestion des arguments -t (texte) ou -x (xml)
     if (argc != 2 || (string(argv[1]) != "-t" && string(argv[1]) != "-x")) {
         cerr << " Utilisation incorrecte.\n";
         cerr << "Usage : ./parseur -t   (sortie texte)\n";
@@ -466,78 +613,60 @@ int main(int argc, char* argv[]) {
     }
 
     bool modeTexte = (string(argv[1]) == "-t");
-    string dossierEntree = "converted_txt";
+    string dossierPDF = "pdf";
     string dossierSortie = modeTexte ? "parsed_txt" : "parsed_xml";
 
-    //  Nettoyage et création du dossier de sortie
-    if (fs::exists(dossierSortie)) {
-        fs::remove_all(dossierSortie);
+    // Créer dossier de sortie s'il n'existe pas
+    if (!fs::exists(dossierSortie)) {
+        fs::create_directory(dossierSortie);
     }
-    fs::create_directory(dossierSortie);
 
-    cout << "\n Traitement des fichiers depuis '" << dossierEntree << "' vers '" << dossierSortie << "'\n";
-
-    //  Parcourir les fichiers .txt
-    for (const auto& fichier : fs::directory_iterator(dossierEntree)) {
-        if (fichier.path().extension() == ".txt") {
-            string nomOriginal = fichier.path().filename().string();
-            string nomModifie = nomOriginal;
-            replace(nomModifie.begin(), nomModifie.end(), ' ', '_');
-
-            ifstream fichierEntree(fichier.path());
-            if (!fichierEntree) {
-                cerr << "Erreur ouverture fichier : " << nomOriginal << endl;
-                continue;
-            }
-
-            stringstream buffer;
-            buffer << fichierEntree.rdbuf();
-            string contenu = buffer.str();
-
-            //  Extraction
-            string titre = extraireTitre(contenu);
-            string resume = extraireAbstract(contenu);
-            string biblio = extraireBiblio(contenu);
-            vector<string> auteurs = extraireAuteurs(contenu);
-            string conclusion = extraireConclusion(contenu);
-
-
-
-            //  Écriture dans fichier final
-            string extension = modeTexte ? ".txt" : ".xml";
-            string cheminSortie = dossierSortie + "/" + fs::path(nomModifie).stem().string() + extension;
-
-            ofstream fichierSortie(cheminSortie);
-            if (!fichierSortie) {
-                cerr << "Erreur création fichier sortie : " << cheminSortie << endl;
-                continue;
-            }
-
-            if (modeTexte) {
-                fichierSortie << "Titre : " << titre << "\n\n";
-                fichierSortie << "Abstract : " << resume << "\n";
-                fichierSortie <<"Preamble : "<<nomModifie<< "\n";
-                for (const string& a : auteurs) {
-                    fichierSortie << "Aueturs : " << a << "\n";
-                }
-                fichierSortie << "Biblio : "<<biblio<< "\n";
-            } else {
-                fichierSortie << "<article>\n";
-                fichierSortie << "  <preamble>" << nomModifie << "</preamble>\n";
-                fichierSortie << "  <titre>" << titre << "</titre>\n";
-                for (const string& a : auteurs) {
-                    fichierSortie << "  <auteur>" << a << "</auteur>\n";
-                }
-                fichierSortie << "  <abstract>" << resume << "</abstract>\n";
-                fichierSortie << "  <biblio>"<<biblio<<"</biblio>\n";
-                fichierSortie << "  <conclusion>" << conclusion << "</conclusion>\n";
-                fichierSortie << "</article>\n";
-            }
-
-            cout << " Fichier traité : " << nomOriginal << " ➜ " << cheminSortie << endl;
+    // Lister les fichiers PDF
+    vector<string> fichiersPDF;
+    vector<string> cheminsPDF;
+    for (const auto& fichier : fs::directory_iterator(dossierPDF)) {
+        if (fichier.path().extension() == ".pdf") {
+            fichiersPDF.push_back(fichier.path().filename().string());
+            cheminsPDF.push_back(fichier.path().string());
         }
     }
 
-    cout << "\n Tous les fichiers ont été traités avec succès.\n";
+    if (fichiersPDF.empty()) {
+        cerr << "Aucun fichier PDF trouvé dans '" << dossierPDF << "'\n";
+        return 1;
+    }
+
+    // Afficher menu
+    int choix = afficherMenuFichiers(fichiersPDF);
+    if (choix == fichiersPDF.size() + 1) {
+        cout << "Programme terminé.\n";
+        return 0;
+    }
+
+    vector<string> fichiersATraiter;
+    if (choix == 0) {
+        fichiersATraiter = cheminsPDF;
+    } else {
+        fichiersATraiter.push_back(cheminsPDF[choix - 1]);
+    }
+
+    for (const auto& cheminPDF : fichiersATraiter) {
+        string nomSansExtension = fs::path(cheminPDF).stem().string();
+        string cheminTempTxt = "temp_" + nomSansExtension + ".txt";
+
+        cout << "Conversion de : " << cheminPDF << endl;
+        if (!convertirPDFenTXT(cheminPDF, cheminTempTxt)) {
+            cerr << "Erreur lors de la conversion du PDF.\n";
+            continue;
+        }
+
+        // Parser le fichier temporaire converti
+        traiterFichier(cheminTempTxt, dossierSortie, modeTexte);
+
+        // Nettoyer le fichier temporaire
+        fs::remove(cheminTempTxt);
+    }
+
+    cout << "\nTous les fichiers ont été traités.\n";
     return 0;
 }
