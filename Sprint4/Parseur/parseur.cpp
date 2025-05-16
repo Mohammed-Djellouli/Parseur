@@ -14,9 +14,9 @@
 using namespace std;
 namespace fs = std::filesystem;
 
-// Définition de la fonction d'affichage du menu
+// DÃ©finition de la fonction d'affichage du menu
 int afficherMenuFichiers(const vector<string>& fichiers) {
-    cout << "\n=== Sélection du fichier à traiter ===\n\n";
+    cout << "\n=== SÃ©lection du fichier Ã  traiter ===\n\n";
 
     // Afficher la liste des fichiers
     for (size_t i = 0; i < fichiers.size(); ++i) {
@@ -32,14 +32,14 @@ int afficherMenuFichiers(const vector<string>& fichiers) {
 
     // Validation du choix
     while (choix < 0 || choix > static_cast<int>(fichiers.size()+1)) {
-        cout << "Choix invalide. Réessayez : ";
+        cout << "Choix invalide. RÃ©essayez : ";
         cin >> choix;
     }
 
     return choix;
 }
 
-// Définition de la fonction de conversion PDF → TXT
+// DÃ©finition de la fonction de conversion PDF â†’ TXT
 bool convertirPDFenTXT(const string& cheminPDF, const string& cheminTXT) {
     string commande = "pdftotext -layout -enc UTF-8 -nopgbrk \"" + cheminPDF + "\" \"" + cheminTXT + "\"";
     int result = system(commande.c_str());
@@ -52,7 +52,7 @@ string extraireAbstract(const string& contenu) {
     string ligne, abstract = "";
     bool inAbstract = false;
 
-    regex contientAbstract("\\b(Abstract|Résumé|ABSTRACT|RESUME)\\b", regex_constants::icase);
+    regex contientAbstract("\\b(Abstract|RÃ©sumÃ©|ABSTRACT|RESUME)\\b", regex_constants::icase);
     regex finPossible(R"(\b((\d+\.?)|(I+\.))?\s*[Ii]\s*N\s*T\s*R\s*O\s*D\s*U\s*C\s*T\s*I\s*O\s*N\b)", regex_constants::icase);
     regex finPossible2(R"(\bIntroduction\b)", regex_constants::icase);
     regex separateurColonnes(" {7,}");
@@ -150,7 +150,7 @@ string extraireTitre(const string& contenu) {
 
     if (titre.empty()) return "Titre introuvable";
 
-    vector<string> separateurs = {" – ", "—", " –", "— ", " - ", "–", ".", " -- ", "*", "Minh", "David", "Vincent"};
+    vector<string> separateurs = {" â€“ ", "â€”", " â€“", "â€” ", " - ", "â€“", ".", " -- ", "*", "Minh", "David", "Vincent"};
     for (const auto& sep : separateurs) {
         size_t pos = titre.find(sep);
         if (pos != string::npos) {
@@ -169,7 +169,7 @@ string extraireBiblio(const string& contenu) {
     string ligne, biblio = "";
     bool inBiblio = false;
 
-    regex debutBiblio(R"(\b(References|Bibliography|Références|Référence|Works Cited)\b)", regex_constants::icase);
+    regex debutBiblio(R"(\b(References|Bibliography|RÃ©fÃ©rences|RÃ©fÃ©rence|Works Cited)\b)", regex_constants::icase);
     regex separateurColonnes(" {7,}");
     regex ligneVide(R"(^\s*$)");
 
@@ -193,12 +193,12 @@ string extraireBiblio(const string& contenu) {
             rightPart.erase(0, rightPart.find_first_not_of(" \t\n"));
             rightPart.erase(rightPart.find_last_not_of(" \t\n") + 1);
 
-            // On garde une seule colonne pour éviter d'ajouter des morceaux parasites
+            // On garde une seule colonne pour Ã©viter d'ajouter des morceaux parasites
             if (inBiblio) {
                 // Pendant la biblio, on prend la colonne gauche uniquement
                 selectedColumn = leftPart;
             } else {
-                // Avant la biblio, on cherche le mot-clé sur les deux
+                // Avant la biblio, on cherche le mot-clÃ© sur les deux
                 if (regex_search(rightPart, debutBiblio)) {
                     selectedColumn = rightPart;
                 } else if (regex_search(leftPart, debutBiblio)) {
@@ -213,7 +213,7 @@ string extraireBiblio(const string& contenu) {
             selectedColumn.erase(selectedColumn.find_last_not_of(" \t\n") + 1);
         }
 
-        // Détection du début de la biblio
+        // DÃ©tection du dÃ©but de la biblio
         if (!inBiblio && regex_search(selectedColumn, debutBiblio)) {
             inBiblio = true;
             continue;
@@ -232,67 +232,12 @@ string extraireBiblio(const string& contenu) {
     return biblio;
 }
 
-
-string extraireCorps(const string& contenu) {
-    istringstream iss(contenu);
-    string ligne, corps = "";
-    bool inCorps = false;
-    bool debutTrouve = false; 
-
-regex debutClassique(R"(^\s*(2|II)(\.\d+)?\s*[\.\-\–]?\s+(Related Work|From Full Sentence to Compressed
-Sentence|Performance Measure, Corpora for Evaluation|Support Vector Machine|THE IMPORTANCE OF LINGUISTIC|Previous Work|Model Architectures|RELATED WORK|Sentence Compression)\b)", regex_constants::icase);
-
-    regex abstractFin(R"(^\s*abstract\s*$)", std::regex_constants::icase); 
-    bool apresAbstract = false;
-
-    regex finCorps(R"(\b(Conclusion|Conclusions|Discussion|Discussions|Summary|Future Work|Acknowledgments|Acknowledgements|References|Bibliography)\b)", std::regex_constants::icase);
-    regex ligneVide(R"(^\s*$)");
-
-
-    while (getline(iss, ligne)) {
-
-        ligne.erase(std::remove(ligne.begin(), ligne.end(), '\r'), ligne.end());
-
-        if (!debutTrouve) {
-            if (regex_search(ligne, debutClassique)) {
-                inCorps = true;
-                debutTrouve = true;
-                continue; 
-            }
-        }
-
-        if (inCorps) {
-            if (regex_search(ligne, finCorps)) {
-                break; 
-            }
-            if (!regex_match(ligne, ligneVide)) {
-                corps += ligne + "\n";
-            }
-        }
-    }
-
-    if (corps.empty()) {
-        return "Corps introuvable";
-    }
-
-    size_t first = corps.find_first_not_of(" \t\n\r");
-    if (string::npos == first) {
-        return "Corps introuvable (que des espaces)";
-    }
-    size_t last = corps.find_last_not_of(" \t\n\r");
-    corps = corps.substr(first, (last - first + 1));
-
-    return corps;
-}
-
-    
-
 vector<string> extraireAuteurs(const string& contenu) {
     istringstream iss(contenu);
     string ligne;
     vector<string> lignes;
     regex emailPattern(R"(([\w\.-]+,?[\w\.-]*)\s*@[\w\.-]+\.\w+)");
-    regex ignorerPattern(R"(University|Universiteit|Way|Technologies|Laboratory|Space|Institut|Department|School|Laboratoire|Centre|College|Inc|Place|Parkway|France|Canada|Belgium|JAPAN|USA|UK|arXiv|SRI|Google|Submitted|published|École|Polytechnique)", regex_constants::icase);
+    regex ignorerPattern(R"(University|Universiteit|Way|Technologies|Laboratory|Space|Institut|Department|School|Laboratoire|Centre|College|Inc|Place|Parkway|France|Canada|Belgium|JAPAN|USA|UK|arXiv|SRI|Google|Submitted|published|Ã‰cole|Polytechnique)", regex_constants::icase);
     regex ligneVide(R"(^\s*$)");
     regex ligneNom(R"(([A-Z][a-z]+([ -][A-Z][a-z]+)+))");
     regex separateurColonnes(" {7,}");
@@ -319,7 +264,7 @@ vector<string> extraireAuteurs(const string& contenu) {
             partieGauche = regex_replace(partieGauche, regex(R"([0-9]+)"), "");
             partieGauche = regex_replace(partieGauche, regex(R"([,;])"), "");
 
-            // Vérifie si la partie gauche ressemble à un nom
+            // VÃ©rifie si la partie gauche ressemble Ã  un nom
             if (!partieGauche.empty() && !regex_search(partieGauche, ignorerPattern) && regex_search(partieGauche, ligneNom)) {
                 auteursTrouves.insert(partieGauche);
             }
@@ -376,7 +321,7 @@ string extraireDiscussion(const string& contenu) {
     bool inDiscussion = false;
 
     regex debutDiscussion(R"(\b(Discussion|DISCUSSION|Discussion and Conclusion)\b)", regex_constants::icase);
-    regex finDiscussion(R"(\b(Conclusion|CONCLUSION|References|Bibliography|Références|Works Cited|Acknowledgements?)\b)", regex_constants::icase);
+    regex finDiscussion(R"(\b(Conclusion|CONCLUSION|References|Bibliography|RÃ©fÃ©rences|Works Cited|Acknowledgements?)\b)", regex_constants::icase);
     regex separateurColonnes(" {7,}");
 
     vector<string> lignes;
@@ -426,17 +371,17 @@ string extraireConclusion(const string& contenu) {
     istringstream iss(contenu);
     string ligne, conclusion = "";
     bool inConclusion = false;
-    // Regex très souple pour toutes les variantes vues
+    // Regex trÃ¨s souple pour toutes les variantes vues
     regex debutConclusion(R"((^|\s)\d{1,2}(\.|)?\s+(Conclusion|Conclusions)(\s+and\s+Future\s+Work)?\b)", regex_constants::icase);
     regex finConclusion(R"(^\s*(Acknowledgments?|Appendix|References?|Biography|Biosketch|Thanks))", regex_constants::icase);
     while (getline(iss, ligne)) {
         ligne.erase(remove(ligne.begin(), ligne.end(), '\r'), ligne.end());
-        // Début détecté
+        // DÃ©but dÃ©tectÃ©
         if (!inConclusion && regex_search(ligne, debutConclusion)) {
             inConclusion = true;
             continue; // skip title line
         }
-        // Fin détectée
+        // Fin dÃ©tectÃ©e
         if (inConclusion && regex_search(ligne, finConclusion)) break;
 
         if (inConclusion && !ligne.empty()) {
@@ -453,26 +398,90 @@ string extraireConclusion(const string& contenu) {
 }
 
 
+
+string extraireCorps(const string& contenu) {
+    istringstream iss(contenu);
+    string ligne, corps = "";
+    bool inCorps = false;
+    bool debutTrouve = false; // Pour s'assurer qu'on ne capture pas avant le vrai dÃ©but
+
+    // Regex de dÃ©but modifiÃ©e pour couvrir les formats des images :
+    // Cherche un numÃ©ro (arabe ou romain simple), optionnellement suivi d'un point,
+    // puis d'un espace, puis du titre de la section.
+regex debutClassique(R"(^\s*(2|II)(\.\d+)?\s*[\.\-\â€“]?\s+(Related Work|From Full Sentence to Compressed
+Sentence|Performance Measure, Corpora for Evaluation|Support Vector Machine|THE IMPORTANCE OF LINGUISTIC|Previous Work|Model Architectures|RELATED WORK|Sentence Compression)\b)", regex_constants::icase);
+
+    // Alternative pour commencer aprÃ¨s l'Abstract si aucun titre numÃ©rotÃ© n'est trouvÃ© avant un certain point.
+    regex abstractFin(R"(^\s*abstract\s*$)", std::regex_constants::icase); // Pour dÃ©tecter la fin de l'abstract
+    bool apresAbstract = false;
+
+    // Regex de fin plus gÃ©nÃ©rale :
+    regex finCorps(R"(\b(Conclusion|Conclusions|Discussion|Discussions|Summary|Future Work|Acknowledgments|Acknowledgements|References|Bibliography)\b)", std::regex_constants::icase);
+    regex ligneVide(R"(^\s*$)");
+
+    // int line_number = 0; // Pour dÃ©bogage
+
+    while (getline(iss, ligne)) {
+        // line_number++;
+        // cout << "Ligne " << line_number << ": [" << ligne << "]" << endl;
+
+        ligne.erase(std::remove(ligne.begin(), ligne.end(), '\r'), ligne.end());
+
+        if (!debutTrouve) {
+            if (regex_search(ligne, debutClassique)) {
+                // cout << "DEBUG: debutClassique trouvÃ© sur la ligne: " << ligne << endl;
+                inCorps = true;
+                debutTrouve = true;
+                continue; 
+            }
+        }
+
+        if (inCorps) {
+            if (regex_search(ligne, finCorps)) {
+                // cout << "DEBUG: finCorps trouvÃ© sur la ligne: " << ligne << endl;
+                break; 
+            }
+            if (!regex_match(ligne, ligneVide)) {
+                corps += ligne + "\n";
+            }
+        }
+    }
+
+    if (corps.empty()) {
+        return "Corps introuvable";
+    }
+
+    size_t first = corps.find_first_not_of(" \t\n\r");
+    if (string::npos == first) {
+        return "Corps introuvable (que des espaces)";
+    }
+    size_t last = corps.find_last_not_of(" \t\n\r");
+    corps = corps.substr(first, (last - first + 1));
+
+    return corps;
+}
+
+
 string extraireIntroduction(const string& contenu) {
     istringstream iss(contenu);
     string ligne;
     vector<string> lignes;
 
-    // Regex pour séparer les colonnes dans les documents en deux colonnes
+    // Regex pour sÃ©parer les colonnes dans les documents en deux colonnes
     regex separateurColonnes(" {7,}");
 
-    //  Amélioration : détection plus souple du titre "Introduction"
+    //  AmÃ©lioration : dÃ©tection plus souple du titre "Introduction"
     regex debutIntro(R"((^|\s)((\d+|[IVXLC]+)?[\.\s]*)?(Introduction)\b)", regex_constants::icase);
 
 
-    // Détection d’une nouvelle section : numéro suivi d’un titre (ex. "2 Related Work")
+    // DÃ©tection dâ€™une nouvelle section : numÃ©ro suivi dâ€™un titre (ex. "2 Related Work")
     regex nouvelleSection(R"(^\s*$|^\s*(\d+|[IVXLC]+)[\.\s]+[A-Z].*|^\s*((\d+|[IVXLC]+)(\.\d+)?\.?)\s{1,}(Sentence|[A-Z][^\n]*)|^\s*Figure\s+\d+)", regex_constants::icase);
 
 
-    // Mots-clés pour l’abstract ou résumé
-    regex motCleAbstract(R"(\b(Abstract|Résumé)\b)", regex_constants::icase);
+    // Mots-clÃ©s pour lâ€™abstract ou rÃ©sumÃ©
+    regex motCleAbstract(R"(\b(Abstract|RÃ©sumÃ©)\b)", regex_constants::icase);
 
-    // Étape 1 : charger toutes les lignes
+    // Ã‰tape 1 : charger toutes les lignes
     while (getline(iss, ligne)) {
         ligne.erase(remove(ligne.begin(), ligne.end(), '\r'), ligne.end()); // Nettoyer les retours chariot
         lignes.push_back(ligne);
@@ -480,7 +489,7 @@ string extraireIntroduction(const string& contenu) {
 
     int indexIntro = -1;
 
-    // Étape 2 : repérer la ligne "Introduction"
+    // Ã‰tape 2 : repÃ©rer la ligne "Introduction"
     for (size_t i = 0; i < lignes.size(); ++i) {
         string l = lignes[i];
         l.erase(0, l.find_first_not_of(" \t\n"));
@@ -493,14 +502,14 @@ string extraireIntroduction(const string& contenu) {
     }
 
     if (indexIntro == -1) {
-        // Fallback : essayer d'extraire le premier gros paragraphe avant la première section numérotée
+        // Fallback : essayer d'extraire le premier gros paragraphe avant la premiÃ¨re section numÃ©rotÃ©e
         string tentativeIntro = "";
         for (size_t i = 0; i < lignes.size(); ++i) {
             string test = lignes[i];
             test.erase(0, test.find_first_not_of(" \t\n"));
             test.erase(test.find_last_not_of(" \t\n") + 1);
 
-            // Arrêt si on tombe sur une vraie section (comme "1 Related Work", "2 Methodology", etc.)
+            // ArrÃªt si on tombe sur une vraie section (comme "1 Related Work", "2 Methodology", etc.)
             if (regex_match(test, regex(R"(^\s*(\d+|[IVXLC]+)[\.\s]+[A-Z].*)"))) {
                 break;
             }
@@ -523,7 +532,7 @@ string extraireIntroduction(const string& contenu) {
 
     string introduction = "";
 
-    // Étape 3 : remonter les lignes avant "Introduction" si elles sont liées (ex. résumé structuré en colonnes)
+    // Ã‰tape 3 : remonter les lignes avant "Introduction" si elles sont liÃ©es (ex. rÃ©sumÃ© structurÃ© en colonnes)
     for (int i = indexIntro - 1; i >= 0; --i) {
         string line = lignes[i];
         smatch match;
@@ -544,13 +553,13 @@ string extraireIntroduction(const string& contenu) {
         introduction = (left + " " + right + " ") + introduction;
     }
 
-    // Étape 4 : concaténer les lignes de l’introduction en descendant
+    // Ã‰tape 4 : concatÃ©ner les lignes de lâ€™introduction en descendant
     string introLigne = lignes[indexIntro];
     string introTexte = introLigne;
     introTexte.erase(0, introTexte.find_first_not_of(" \t\n"));
     introTexte.erase(introTexte.find_last_not_of(" \t\n") + 1);
 
-    // Si la ligne contient autre chose que juste "Introduction", ne pas l’ajouter brute
+    // Si la ligne contient autre chose que juste "Introduction", ne pas lâ€™ajouter brute
     if (!regex_match(introTexte, debutIntro)) {
         introduction += introLigne + " ";
     }
@@ -564,7 +573,7 @@ string extraireIntroduction(const string& contenu) {
         test.erase(0, test.find_first_not_of(" \t\n"));
         test.erase(test.find_last_not_of(" \t\n") + 1);
 
-        // Stop si nouvelle section OU si ligne complètement vide
+        // Stop si nouvelle section OU si ligne complÃ¨tement vide
         if (test.empty() || regex_search(test, nouvelleSection)) break;
 
         smatch match;
@@ -587,14 +596,14 @@ string extraireIntroduction(const string& contenu) {
     }
 
 
-    // Étape 5 : nettoyage final
+    // Ã‰tape 5 : nettoyage final
     introduction.erase(0, introduction.find_first_not_of(" \t\n"));
     introduction.erase(introduction.find_last_not_of(" \t\n") + 1);
 
     return introduction;
 }
 
-// Fonction pour traiter un fichier spécifique
+// Fonction pour traiter un fichier spÃ©cifique
 void traiterFichier(const string& cheminFichier, const string& dossierSortie, bool modeTexte) {
     string nomOriginal = fs::path(cheminFichier).filename().string();
     string nomModifie = nomOriginal;
@@ -618,20 +627,22 @@ void traiterFichier(const string& cheminFichier, const string& dossierSortie, bo
     string discussion = extraireDiscussion(contenu);
     string conclusion = extraireConclusion(contenu);
     string introduction = extraireIntroduction(contenu);
+    string corps = extraireCorps(contenu);
 
-    // Écriture dans fichier final
+    // Ã‰criture dans fichier final
     string extension = modeTexte ? ".txt" : ".xml";
     string cheminSortie = dossierSortie + "/" + fs::path(nomModifie).stem().string() + extension;
 
     ofstream fichierSortie(cheminSortie);
     if (!fichierSortie) {
-        cerr << "Erreur création fichier sortie : " << cheminSortie << endl;
+        cerr << "Erreur crÃ©ation fichier sortie : " << cheminSortie << endl;
         return;
     }
 
     if (modeTexte) {
         fichierSortie << "Titre : " << titre << "\n\n";
         fichierSortie << "Introduction : " << introduction << "\n\n";
+        fichierSortie << "Corps : " << corps << "\n\n";
         fichierSortie << "Abstract : " << resume << "\n";
         fichierSortie << "Discussion : " << discussion << "\n";
         fichierSortie << "Preamble : " << nomModifie << "\n";
@@ -648,6 +659,7 @@ void traiterFichier(const string& cheminFichier, const string& dossierSortie, bo
             fichierSortie << "  <auteur>" << a << "</auteur>\n";
         }
         fichierSortie << "  <introduction>" << introduction << "</introduction>\n";
+        fichierSortie << "  <corps>" << corps << "</corps>\n";
         fichierSortie << "  <abstract>" << resume << "</abstract>\n";
         fichierSortie << "  <discussion>" << discussion << "</discussion>\n";
         fichierSortie << "  <conclusion>" << conclusion << "</conclusion>\n";
@@ -655,7 +667,7 @@ void traiterFichier(const string& cheminFichier, const string& dossierSortie, bo
         fichierSortie << "</article>\n";
     }
 
-    cout << " Fichier traité : " << nomOriginal << " ➜ " << cheminSortie << endl;
+    cout << " Fichier traitÃ© : " << nomOriginal << " âžœ " << cheminSortie << endl;
 }
 
 // === Fonction principale ===
@@ -671,71 +683,11 @@ int main(int argc, char* argv[]) {
     string dossierPDF = "pdf";
     string dossierSortie = modeTexte ? "parsed_txt" : "parsed_xml";
 
-    // Créer dossier de sortie s'il n'existe pas
+    // CrÃ©er dossier de sortie s'il n'existe pas
     if (!fs::exists(dossierSortie)) {
         fs::create_directory(dossierSortie);
     }
 
-<<<<<<< HEAD
-    cout << "\n Traitement des fichiers depuis '" << dossierEntree << "' vers '" << dossierSortie << "'\n";
-
-    //  Parcourir les fichiers .txt
-    for (const auto& fichier : fs::directory_iterator(dossierEntree)) {
-        if (fichier.path().extension() == ".txt") {
-            string nomOriginal = fichier.path().filename().string();
-            string nomModifie = nomOriginal;
-            replace(nomModifie.begin(), nomModifie.end(), ' ', '_');
-
-            ifstream fichierEntree(fichier.path());
-            if (!fichierEntree) {
-                cerr << "Erreur ouverture fichier : " << nomOriginal << endl;
-                continue;
-            }
-
-            stringstream buffer;
-            buffer << fichierEntree.rdbuf();
-            string contenu = buffer.str();
-            string corps = extraireCorps(contenu);
-            //  Extraction
-            string titre = extraireTitre(contenu);
-            string resume = extraireAbstract(contenu);
-            string biblio = extraireBiblio(contenu);
-            vector<string> auteurs = extraireAuteurs(contenu);
-
-
-            //  Écriture dans fichier final
-            string extension = modeTexte ? ".txt" : ".xml";
-            string cheminSortie = dossierSortie + "/" + fs::path(nomModifie).stem().string() + extension;
-
-            ofstream fichierSortie(cheminSortie);
-            if (!fichierSortie) {
-                cerr << "Erreur création fichier sortie : " << cheminSortie << endl;
-                continue;
-            }
-
-            if (modeTexte) {
-                fichierSortie << "Titre : " << titre << "\n\n";
-                fichierSortie << "Abstract : " << resume << "\n";
-                fichierSortie <<"Preamble : "<<nomModifie<< "\n";
-                for (const string& a : auteurs) {
-                    fichierSortie << "Aueturs : " << a << "\n";
-                }
-                fichierSortie << "Biblio : "<<biblio<< "\n";
-            } else {
-                fichierSortie << "<article>\n";
-                fichierSortie << "  <preamble>" << nomModifie << "</preamble>\n";
-                fichierSortie << "  <titre>" << titre << "</titre>\n";
-                for (const string& a : auteurs) {
-                    fichierSortie << "  <auteur>" << a << "</auteur>\n";
-                }
-                fichierSortie << "  <abstract>" << resume << "</abstract>\n";
-                fichierSortie << "  <corps>" << corps << "</corps>\n";
-                fichierSortie << "  <biblio>"<<biblio<<"</biblio>\n";
-                fichierSortie << "</article>\n";
-            }
-
-            cout << " Fichier traité : " << nomOriginal << " ➜ " << cheminSortie << endl;
-=======
     // Lister les fichiers PDF
     vector<string> fichiersPDF;
     vector<string> cheminsPDF;
@@ -743,19 +695,18 @@ int main(int argc, char* argv[]) {
         if (fichier.path().extension() == ".pdf") {
             fichiersPDF.push_back(fichier.path().filename().string());
             cheminsPDF.push_back(fichier.path().string());
->>>>>>> 761d2fe2eb9e89ebbfaad0f314fa9e6ea5d97ed3
         }
     }
 
     if (fichiersPDF.empty()) {
-        cerr << "Aucun fichier PDF trouvé dans '" << dossierPDF << "'\n";
+        cerr << "Aucun fichier PDF trouvÃ© dans '" << dossierPDF << "'\n";
         return 1;
     }
 
     // Afficher menu
     int choix = afficherMenuFichiers(fichiersPDF);
     if (choix == fichiersPDF.size() + 1) {
-        cout << "Programme terminé.\n";
+        cout << "Programme terminÃ©.\n";
         return 0;
     }
 
@@ -783,6 +734,6 @@ int main(int argc, char* argv[]) {
         fs::remove(cheminTempTxt);
     }
 
-    cout << "\nTous les fichiers ont été traités.\n";
+    cout << "\nTous les fichiers ont Ã©tÃ© traitÃ©s.\n";
     return 0;
 }
