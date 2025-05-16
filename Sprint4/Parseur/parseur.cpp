@@ -403,33 +403,27 @@ string extraireCorps(const string& contenu) {
     istringstream iss(contenu);
     string ligne, corps = "";
     bool inCorps = false;
-    bool debutTrouve = false; // Pour s'assurer qu'on ne capture pas avant le vrai dÃ©but
+    bool debutTrouve = false; 
 
-    // Regex de dÃ©but modifiÃ©e pour couvrir les formats des images :
-    // Cherche un numÃ©ro (arabe ou romain simple), optionnellement suivi d'un point,
-    // puis d'un espace, puis du titre de la section.
+    
 regex debutClassique(R"(^\s*(2|II)(\.\d+)?\s*[\.\-\â€“]?\s+(Related Work|From Full Sentence to Compressed
 Sentence|Performance Measure, Corpora for Evaluation|Support Vector Machine|THE IMPORTANCE OF LINGUISTIC|Previous Work|Model Architectures|RELATED WORK|Sentence Compression)\b)", regex_constants::icase);
 
-    // Alternative pour commencer aprÃ¨s l'Abstract si aucun titre numÃ©rotÃ© n'est trouvÃ© avant un certain point.
-    regex abstractFin(R"(^\s*abstract\s*$)", std::regex_constants::icase); // Pour dÃ©tecter la fin de l'abstract
+    
+    regex abstractFin(R"(^\s*abstract\s*$)", std::regex_constants::icase); 
     bool apresAbstract = false;
 
-    // Regex de fin plus gÃ©nÃ©rale :
     regex finCorps(R"(\b(Conclusion|Conclusions|Discussion|Discussions|Summary|Future Work|Acknowledgments|Acknowledgements|References|Bibliography)\b)", std::regex_constants::icase);
     regex ligneVide(R"(^\s*$)");
 
-    // int line_number = 0; // Pour dÃ©bogage
+    
 
     while (getline(iss, ligne)) {
-        // line_number++;
-        // cout << "Ligne " << line_number << ": [" << ligne << "]" << endl;
-
+       
         ligne.erase(std::remove(ligne.begin(), ligne.end(), '\r'), ligne.end());
 
         if (!debutTrouve) {
             if (regex_search(ligne, debutClassique)) {
-                // cout << "DEBUG: debutClassique trouvÃ© sur la ligne: " << ligne << endl;
                 inCorps = true;
                 debutTrouve = true;
                 continue; 
@@ -438,7 +432,6 @@ Sentence|Performance Measure, Corpora for Evaluation|Support Vector Machine|THE 
 
         if (inCorps) {
             if (regex_search(ligne, finCorps)) {
-                // cout << "DEBUG: finCorps trouvÃ© sur la ligne: " << ligne << endl;
                 break; 
             }
             if (!regex_match(ligne, ligneVide)) {
